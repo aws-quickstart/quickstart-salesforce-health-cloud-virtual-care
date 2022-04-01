@@ -1,0 +1,13 @@
+# TaskCat
+taskcat_outputs/
+.taskcat_overrides.yml
+.taskcat/
+
+# TaskCat Lambda zip path
+packages/
+
+# macOS
+.DS_Store
+
+# IDE workspace settings
+.vscode/
