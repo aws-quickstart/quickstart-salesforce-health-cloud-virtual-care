@@ -1,5 +1,126 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: AWS CloudFormation Template to create resources required to send Chime events to Salesforce (qp-1ss4p92gu)
 Parameters:
+  SalesforceUsername:
+    Type: String
+    Description: Salesforce username
+  SalesforcePassword:
+    Type: String
+    Description: Salesforce password
+    NoEcho: True
+  SalesforceOAuthConsumerKey:
+    Type: String
+    Description: Salesforce Provided OAuth ClientId
+    NoEcho: True
+  SalesforceOAuthConsumerSecret:
+    Type: String
+    Description: Salesforce Provided OAuth ClientSecret
+    NoEcho: True
+  SalesforceAuthorizationEndpoint:  
+    Type: String
+    Description: Salesforce OAuth Authorization Endpoint    
+  SalesforcePlatformEventEndPoint: 
+    Type: String
+    Description: Salesforce URI to publish the event to
+  SalesforceInvocationRateLimitParam:
+    Type: Number
+    Description: Rate Limit for Salesforce from Amazon EventBridge
 Resources:
-Outputs:
+  SalesforceApiDestinationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: Amazon EventBus API Destination Role
+      RoleName: Salesforce_EventBridge_Invoke_Api_Destination
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: 
+          - Effect: Allow
+            Principal: 
+              Service: 
+                - events.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+      Path: '/service-role/'
+      Policies:
+        - PolicyName: SalesforceApiDestinationPolicy
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              - Effect: Allow
+                Action: 
+                  - events:InvokeApiDestination
+                Resource: !GetAtt SalesforceApiDestination.Arn
+  SalesforceConnectionSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: SalesforceOAuthSecret
+      Description: "OAuth connection credential secret."   
+      SecretString: !Sub '{"ClientID": "${SalesforceOAuthConsumerKey}", "ClientSecret": "${SalesforceOAuthConsumerSecret}", "Username": "${SalesforceUsername}", "Password": "${SalesforcePassword}"}'
+  SalesforceOAuthConnection:
+    Type: AWS::Events::Connection
+    Properties:
+      Name: SalesforceOAuthConnection
+      AuthorizationType: OAUTH_CLIENT_CREDENTIALS
+      AuthParameters:
+        OAuthParameters:
+          AuthorizationEndpoint: !Ref SalesforceAuthorizationEndpoint
+          ClientParameters:
+            ClientID: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientID}}'
+            ClientSecret: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientSecret}}'
+          HttpMethod: POST
+          OAuthHttpParameters:
+            BodyParameters:
+              - IsValueSecret: false
+                Key: grant_type
+                Value: password  
+              - IsValueSecret: false
+                Key: username
+                Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Username}}'
+              - IsValueSecret: true
+                Key: password
+                Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Password}}'
+    DependsOn: SalesforceConnectionSecret
+  SalesforceApiDestination:
+    Type: AWS::Events::ApiDestination
+    Properties:
+      ConnectionArn: !GetAtt SalesforceOAuthConnection.Arn
+      Description: API Destination to send events to Salesforce Plantform Event endpoint
+      HttpMethod: POST
+      InvocationEndpoint: !Ref SalesforcePlatformEventEndPoint
+      InvocationRateLimitPerSecond: !Ref SalesforceInvocationRateLimitParam
+  SalesforceEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Rule to use API Destination with Input Transformer
+      State: ENABLED
+      EventPattern:
+        source:
+          - aws.chime
+      RoleArn: !GetAtt 
+        - SalesforceApiDestinationRole
+        - Arn
+      Targets:
+        - Id: Salesforce-destination
+          Arn: !GetAtt 
+          - SalesforceApiDestination
+          - Arn
+          RoleArn: !GetAtt 
+            - SalesforceApiDestinationRole
+            - Arn
+          InputTransformer:
+            InputPathsMap:
+              source : $.source
+              account : $.account
+              id : $.id
+              region : $.region
+              detail-type : $.detail-type
+              time : $.time
+              eventType : $.detail.eventType
+              timestamp : $.detail.timestamp
+              meetingId : $.detail.meetingId
+              externalMeetingId : $.detail.externalMeetingId
+              attendeeId : $.detail.attendeeId
+              externalUserId : $.detail.externalUserId
+              mediaRegion : $.detail.mediaRegion
+              networkType : $.detail.networkType
+            InputTemplate: '{"ServiceName" : "<source>","Json" : "{\r\n\"source\": \"<source>\",\r\n\"account\": \"<account>\",\r\n\"id\": \"<id>\",\r\n\"region\": \"<region>\",\r\n\"detail-type\": \"<detail-type>\",\r\n\"time\": \"<time>\",\r\n\"detail\": {\r\n\"eventType\": \"<eventType>\",\r\n\"timestamp\": \"<timestamp>\",\r\n\"meetingId\": \"<meetingId>\",\r\n\"externalMeetingId\": \"<externalMeetingId>\",\r\n\"attendeeId\": \"<attendeeId>\",\r\n\"externalUserId\": \"<externalUserId>\",\r\n\"mediaRegion\": \"<mediaRegion>\",\r\n\"networkType\":\"<networkType>\"\r\n}\r\n}"}'
