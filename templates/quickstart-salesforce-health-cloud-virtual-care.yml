@@ -25,6 +25,15 @@ Metadata:
         Parameters:
           - MaximumRetryAttempts
           - MaximumEventAgeInSeconds
+      - Label:
+          default: Dead letter queue configuration
+        Parameters:
+          - DeadLetterQueueName
+          - MessageRetentionPeriod
+          - AlarmEmail
+          - QueueDepthAlarmPeriod
+          - QueueDepthAlarmEvaluationPeriods
+          - QueueDepthAlarmThreshold
     ParameterLabels:
       SalesforceUsername:
         default: Username
@@ -44,6 +53,18 @@ Metadata:
         default: Max retries
       MaximumEventAgeInSeconds:
         default: Max age
+      DeadLetterQueueName:
+        default: Name
+      MessageRetentionPeriod:
+        default: Retention period
+      AlarmEmail:
+        default: Email address
+      QueueDepthAlarmPeriod:
+        default: Alarm period
+      QueueDepthAlarmEvaluationPeriods:
+        default: Alarm evaluation periods
+      QueueDepthAlarmThreshold:
+        default: Alarm threshold
 Parameters:
   SalesforceUsername:
     Type: String
@@ -85,6 +106,46 @@ Parameters:
     MinValue: 60 # 1 minute
     MaxValue: 86400 # 1 day
     Default: 400 # 6.7 minutes
+  DeadLetterQueueName:
+    Type: String
+    Description: Name for the Salesforce dead-letter queue.
+    AllowedPattern: "[a-zA-Z0-9-_]+"
+    ConstraintDescription: Can only include alphanumeric characters, hyphens, or underscores. 1 to 80 in length.
+    MinLength: 1
+    MaxLength: 80
+    Default: SalesforceDLQ
+  MessageRetentionPeriod:
+    Type: Number
+    Description: The number of seconds that messages are retained in the dead-letter queue.
+    MinValue: 60 # 1 minute
+    MaxValue: 1209600 # 14 days
+    Default: 345600 # 4 days
+  AlarmEmail:
+    Type: String
+    Description: Email address to notify of operational issues.
+    MinLength: 1
+  QueueDepthAlarmPeriod:
+    Type: Number
+    Description: >-
+      The period, in seconds, over which the statistic is applied. Valid values are 10, 30, 60, and any multiple of 60.
+    MinValue: 10
+    Default: 300 # 5 minutes
+  QueueDepthAlarmEvaluationPeriods:
+    Type: Number
+    Description: >-
+      The number of periods over which the number messages in the Salesforce dead-letter queue is compared to the
+      specified threshold.
+    MinValue: 1
+    Default: 1
+  QueueDepthAlarmThreshold:
+    Type: Number
+    Description: >-
+      The threshold number of messages in the Salesforce dead-letter queue to trigger an alarm. If set to 0, the
+      Amazon SNS topic and Amazon CloudWatch alarm will not be created.
+    MinValue: 0
+    Default: 10
+Conditions:
+  CreateAlarm: !Not [!Equals [!Ref QueueDepthAlarmThreshold, 0]]
 Resources:
   SalesforceApiDestinationRole:
     Type: AWS::IAM::Role
@@ -163,6 +224,8 @@ Resources:
           RetryPolicy:
             MaximumRetryAttempts: !Ref MaximumRetryAttempts
             MaximumEventAgeInSeconds: !Ref MaximumEventAgeInSeconds
+          DeadLetterConfig:
+            Arn: !GetAtt DeadLetterQueue.Arn
           RoleArn: !GetAtt SalesforceApiDestinationRole.Arn
           InputTransformer:
             InputPathsMap:
@@ -181,3 +244,35 @@ Resources:
               mediaRegion: $.detail.mediaRegion
               networkType: $.detail.networkType
             InputTemplate: '{"ServiceName" : "<source>","Json" : "{\r\n\"source\": \"<source>\",\r\n\"account\": \"<account>\",\r\n\"id\": \"<id>\",\r\n\"region\": \"<region>\",\r\n\"detail-type\": \"<detail-type>\",\r\n\"time\": \"<time>\",\r\n\"detail\": {\r\n\"eventType\": \"<eventType>\",\r\n\"timestamp\": \"<timestamp>\",\r\n\"meetingId\": \"<meetingId>\",\r\n\"externalMeetingId\": \"<externalMeetingId>\",\r\n\"attendeeId\": \"<attendeeId>\",\r\n\"externalUserId\": \"<externalUserId>\",\r\n\"mediaRegion\": \"<mediaRegion>\",\r\n\"networkType\":\"<networkType>\"\r\n}\r\n}"}'
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref DeadLetterQueueName
+      MessageRetentionPeriod: !Ref MessageRetentionPeriod
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Condition: CreateAlarm
+    Properties:
+      DisplayName: !Sub ${DeadLetterQueueName}-topic
+      Subscription:
+        - Endpoint: !Ref AlarmEmail
+          Protocol: email
+  QueueDepthAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: CreateAlarm
+    Properties:
+      AlarmDescription: Alarm if the Salesforce dead-letter queue depth exceeds the specified number of messages.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt DeadLetterQueue.QueueName
+      Statistic: Sum
+      Period: !Ref QueueDepthAlarmPeriod
+      EvaluationPeriods: !Ref QueueDepthAlarmEvaluationPeriods
+      Threshold: !Ref QueueDepthAlarmThreshold
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmTopic
+      InsufficientDataActions:
+        - !Ref AlarmTopic
