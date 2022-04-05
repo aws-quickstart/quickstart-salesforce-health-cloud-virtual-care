@@ -22,6 +22,9 @@ Metadata:
           - SalesforceInvocationRateLimitParam
       - Label:
           default: Event processing retry configuration
+        Parameters:
+          - MaximumRetryAttempts
+          - MaximumEventAgeInSeconds
     ParameterLabels:
       SalesforceUsername:
         default: Username
@@ -37,6 +40,10 @@ Metadata:
         default: Event endpoint
       SalesforceInvocationRateLimitParam:
         default: Rate limit
+      MaximumRetryAttempts:
+        default: Max retries
+      MaximumEventAgeInSeconds:
+        default: Max age
 Parameters:
   SalesforceUsername:
     Type: String
@@ -64,6 +71,20 @@ Parameters:
     Description: Rate limit for Salesforce from Amazon EventBridge.
     MinValue: 1
     Default: 25
+  MaximumRetryAttempts:
+    Type: Number
+    Description: >-
+      The maximum number of retry attempts to make before the request fails. Retry attempts continue until either the
+      maximum number of attempts is made or until the duration of the MaximumEventAgeInSeconds is met.
+    MinValue: 0
+    MaxValue: 185
+    Default: 4
+  MaximumEventAgeInSeconds:
+    Type: Number
+    Description: The maximum amount of time, in seconds, to continue to make retry attempts.
+    MinValue: 60 # 1 minute
+    MaxValue: 86400 # 1 day
+    Default: 400 # 6.7 minutes
 Resources:
   SalesforceApiDestinationRole:
     Type: AWS::IAM::Role
@@ -139,6 +160,9 @@ Resources:
       Targets:
         - Id: Salesforce-destination
           Arn: !GetAtt SalesforceApiDestination.Arn
+          RetryPolicy:
+            MaximumRetryAttempts: !Ref MaximumRetryAttempts
+            MaximumEventAgeInSeconds: !Ref MaximumEventAgeInSeconds
           RoleArn: !GetAtt SalesforceApiDestinationRole.Arn
           InputTransformer:
             InputPathsMap:
