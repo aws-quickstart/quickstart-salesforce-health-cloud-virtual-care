@@ -62,6 +62,8 @@ Parameters:
   SalesforceInvocationRateLimitParam:
     Type: Number
     Description: Rate limit for Salesforce from Amazon EventBridge.
+    MinValue: 1
+    Default: 25
 Resources:
   SalesforceApiDestinationRole:
     Type: AWS::IAM::Role
