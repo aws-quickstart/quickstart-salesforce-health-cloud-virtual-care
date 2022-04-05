@@ -135,17 +135,11 @@ Resources:
       EventPattern:
         source:
           - aws.chime
-      RoleArn: !GetAtt 
-        - SalesforceApiDestinationRole
-        - Arn
+      RoleArn: !GetAtt SalesforceApiDestinationRole.Arn
       Targets:
         - Id: Salesforce-destination
-          Arn: !GetAtt 
-          - SalesforceApiDestination
-          - Arn
-          RoleArn: !GetAtt 
-            - SalesforceApiDestinationRole
-            - Arn
+          Arn: !GetAtt SalesforceApiDestination.Arn
+          RoleArn: !GetAtt SalesforceApiDestinationRole.Arn
           InputTransformer:
             InputPathsMap:
               source: $.source
