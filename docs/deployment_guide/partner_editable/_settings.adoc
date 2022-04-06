@@ -5,9 +5,9 @@
 :partner-company-name: Salesforce, Inc
 :doc-month: April
 :doc-year: 2022
-:partner-contributors: Harsha Talkad, Vandana Sreenivasa Rao {partner-company-name}
+:partner-contributors: Harsha Talkad and Vandana Sreenivasa Rao, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
-// :aws-contributors: Janine Singh, AWS IoT Partner team
+:aws-contributors: Chris Riley, AWS BDSI SACS Architecture team
 :aws-ia-contributors: Troy Lindsay and Dylan Owen, AWS Integration & Automation team
 :deployment_time: 15 minutes
 :default_deployment_region: us-east-1
