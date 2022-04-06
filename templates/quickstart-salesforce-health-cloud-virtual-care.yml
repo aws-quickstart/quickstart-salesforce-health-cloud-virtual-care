@@ -1,30 +1,151 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: AWS CloudFormation Template to create resources required to send Chime events to Salesforce (qp-1ss4p92gu)
+Description: AWS CloudFormation Template to create resources required to send Chime events to Salesforce. (qs-1ssngicuj)
+Metadata:
+  LintSpellExclude:
+    - Salesforce
+    - OAuth
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Salesforce credentials
+        Parameters:
+          - SalesforceUsername
+          - SalesforcePassword
+      - Label:
+          default: Salesforce OAuth configuration
+        Parameters:
+          - SalesforceOAuthConsumerKey
+          - SalesforceOAuthConsumerSecret
+          - SalesforceAuthorizationEndpoint
+          - SalesforcePlatformEventEndPoint
+          - SalesforceInvocationRateLimitParam
+      - Label:
+          default: Event processing retry configuration
+        Parameters:
+          - MaximumRetryAttempts
+          - MaximumEventAgeInSeconds
+      - Label:
+          default: Dead letter queue configuration
+        Parameters:
+          - DeadLetterQueueName
+          - MessageRetentionPeriod
+          - AlarmEmail
+          - QueueDepthAlarmPeriod
+          - QueueDepthAlarmEvaluationPeriods
+          - QueueDepthAlarmThreshold
+    ParameterLabels:
+      SalesforceUsername:
+        default: Username
+      SalesforcePassword:
+        default: Password
+      SalesforceOAuthConsumerKey:
+        default: OAuth client ID
+      SalesforceOAuthConsumerSecret:
+        default: OAuth client secret
+      SalesforceAuthorizationEndpoint:
+        default: OAuth authorization endpoint
+      SalesforcePlatformEventEndPoint:
+        default: Event endpoint
+      SalesforceInvocationRateLimitParam:
+        default: Rate limit
+      MaximumRetryAttempts:
+        default: Max retries
+      MaximumEventAgeInSeconds:
+        default: Max age
+      DeadLetterQueueName:
+        default: Name
+      MessageRetentionPeriod:
+        default: Retention period
+      AlarmEmail:
+        default: Email address
+      QueueDepthAlarmPeriod:
+        default: Alarm period
+      QueueDepthAlarmEvaluationPeriods:
+        default: Alarm evaluation periods
+      QueueDepthAlarmThreshold:
+        default: Alarm threshold
 Parameters:
   SalesforceUsername:
     Type: String
-    Description: Salesforce username
+    Description: Salesforce username.
   SalesforcePassword:
     Type: String
-    Description: Salesforce password
+    Description: Salesforce password.
     NoEcho: True
   SalesforceOAuthConsumerKey:
     Type: String
-    Description: Salesforce Provided OAuth ClientId
+    Description: Salesforce provided OAuth client ID.
     NoEcho: True
   SalesforceOAuthConsumerSecret:
     Type: String
-    Description: Salesforce Provided OAuth ClientSecret
+    Description: Salesforce provided OAuth client secret.
     NoEcho: True
-  SalesforceAuthorizationEndpoint:  
+  SalesforceAuthorizationEndpoint:
     Type: String
-    Description: Salesforce OAuth Authorization Endpoint    
-  SalesforcePlatformEventEndPoint: 
+    Description: Salesforce OAuth authorization endpoint.
+  SalesforcePlatformEventEndPoint:
     Type: String
-    Description: Salesforce URI to publish the event to
+    Description: Salesforce URI to publish the event to.
   SalesforceInvocationRateLimitParam:
     Type: Number
-    Description: Rate Limit for Salesforce from Amazon EventBridge
+    Description: Rate limit for Salesforce from Amazon EventBridge.
+    MinValue: 1
+    Default: 25
+  MaximumRetryAttempts:
+    Type: Number
+    Description: >-
+      The maximum number of retry attempts to make before the request fails. Retry attempts continue until either the
+      maximum number of attempts is made or until the duration of the MaximumEventAgeInSeconds is met.
+    MinValue: 0
+    MaxValue: 185
+    Default: 4
+  MaximumEventAgeInSeconds:
+    Type: Number
+    Description: The maximum amount of time, in seconds, to continue to make retry attempts.
+    MinValue: 60 # 1 minute
+    MaxValue: 86400 # 1 day
+    Default: 400 # 6.7 minutes
+  DeadLetterQueueName:
+    Type: String
+    Description: Name for the Salesforce dead-letter queue.
+    AllowedPattern: "[a-zA-Z0-9-_]+"
+    ConstraintDescription: Can only include alphanumeric characters, hyphens, or underscores. 1 to 80 in length.
+    MinLength: 1
+    MaxLength: 80
+    Default: SalesforceDLQ
+  MessageRetentionPeriod:
+    Type: Number
+    Description: The number of seconds that messages are retained in the dead-letter queue.
+    MinValue: 60 # 1 minute
+    MaxValue: 1209600 # 14 days
+    Default: 345600 # 4 days
+  AlarmEmail:
+    Type: String
+    Description: Email address to notify of operational issues.
+    MinLength: 1
+  QueueDepthAlarmPeriod:
+    Type: Number
+    Description: >-
+      The period, in seconds, over which the statistic is applied. Valid values are 10, 30, 60, and any multiple of 60.
+    MinValue: 10
+    Default: 300 # 5 minutes
+  QueueDepthAlarmEvaluationPeriods:
+    Type: Number
+    Description: >-
+      The number of periods over which the number messages in the Salesforce dead-letter queue is compared to the
+      specified threshold.
+    MinValue: 1
+    Default: 1
+  QueueDepthAlarmThreshold:
+    Type: Number
+    Description: >-
+      The threshold number of messages in the Salesforce dead-letter queue to trigger an alarm. If set to 0, the
+      Amazon SNS topic and Amazon CloudWatch alarm will not be created.
+    MinValue: 0
+    Default: 10
+Conditions:
+  CreateAlarm: !Not [!Equals [!Ref QueueDepthAlarmThreshold, 0]]
 Resources:
   SalesforceApiDestinationRole:
     Type: AWS::IAM::Role
@@ -32,29 +153,29 @@ Resources:
       Description: Amazon EventBus API Destination Role
       RoleName: Salesforce_EventBridge_Invoke_Api_Destination
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement: 
+        Version: 2012-10-17
+        Statement:
           - Effect: Allow
-            Principal: 
-              Service: 
+            Principal:
+              Service:
                 - events.amazonaws.com
-            Action: 
+            Action:
               - sts:AssumeRole
-      Path: '/service-role/'
+      Path: /service-role/
       Policies:
         - PolicyName: SalesforceApiDestinationPolicy
-          PolicyDocument: 
-            Version: '2012-10-17'
-            Statement: 
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
               - Effect: Allow
-                Action: 
+                Action:
                   - events:InvokeApiDestination
                 Resource: !GetAtt SalesforceApiDestination.Arn
   SalesforceConnectionSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
       Name: SalesforceOAuthSecret
-      Description: "OAuth connection credential secret."   
+      Description: OAuth connection credential secret.
       SecretString: !Sub '{"ClientID": "${SalesforceOAuthConsumerKey}", "ClientSecret": "${SalesforceOAuthConsumerSecret}", "Username": "${SalesforceUsername}", "Password": "${SalesforcePassword}"}'
   SalesforceOAuthConnection:
     Type: AWS::Events::Connection
@@ -72,7 +193,7 @@ Resources:
             BodyParameters:
               - IsValueSecret: false
                 Key: grant_type
-                Value: password  
+                Value: password
               - IsValueSecret: false
                 Key: username
                 Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Username}}'
@@ -84,7 +205,7 @@ Resources:
     Type: AWS::Events::ApiDestination
     Properties:
       ConnectionArn: !GetAtt SalesforceOAuthConnection.Arn
-      Description: API Destination to send events to Salesforce Plantform Event endpoint
+      Description: API destination to send events to Salesforce platform event endpoint.
       HttpMethod: POST
       InvocationEndpoint: !Ref SalesforcePlatformEventEndPoint
       InvocationRateLimitPerSecond: !Ref SalesforceInvocationRateLimitParam
@@ -96,31 +217,62 @@ Resources:
       EventPattern:
         source:
           - aws.chime
-      RoleArn: !GetAtt 
-        - SalesforceApiDestinationRole
-        - Arn
+      RoleArn: !GetAtt SalesforceApiDestinationRole.Arn
       Targets:
         - Id: Salesforce-destination
-          Arn: !GetAtt 
-          - SalesforceApiDestination
-          - Arn
-          RoleArn: !GetAtt 
-            - SalesforceApiDestinationRole
-            - Arn
+          Arn: !GetAtt SalesforceApiDestination.Arn
+          RetryPolicy:
+            MaximumRetryAttempts: !Ref MaximumRetryAttempts
+            MaximumEventAgeInSeconds: !Ref MaximumEventAgeInSeconds
+          DeadLetterConfig:
+            Arn: !GetAtt DeadLetterQueue.Arn
+          RoleArn: !GetAtt SalesforceApiDestinationRole.Arn
           InputTransformer:
             InputPathsMap:
-              source : $.source
-              account : $.account
-              id : $.id
-              region : $.region
-              detail-type : $.detail-type
-              time : $.time
-              eventType : $.detail.eventType
-              timestamp : $.detail.timestamp
-              meetingId : $.detail.meetingId
-              externalMeetingId : $.detail.externalMeetingId
-              attendeeId : $.detail.attendeeId
-              externalUserId : $.detail.externalUserId
-              mediaRegion : $.detail.mediaRegion
-              networkType : $.detail.networkType
+              source: $.source
+              account: $.account
+              id: $.id
+              region: $.region
+              detail-type: $.detail-type
+              time: $.time
+              eventType: $.detail.eventType
+              timestamp: $.detail.timestamp
+              meetingId: $.detail.meetingId
+              externalMeetingId: $.detail.externalMeetingId
+              attendeeId: $.detail.attendeeId
+              externalUserId: $.detail.externalUserId
+              mediaRegion: $.detail.mediaRegion
+              networkType: $.detail.networkType
             InputTemplate: '{"ServiceName" : "<source>","Json" : "{\r\n\"source\": \"<source>\",\r\n\"account\": \"<account>\",\r\n\"id\": \"<id>\",\r\n\"region\": \"<region>\",\r\n\"detail-type\": \"<detail-type>\",\r\n\"time\": \"<time>\",\r\n\"detail\": {\r\n\"eventType\": \"<eventType>\",\r\n\"timestamp\": \"<timestamp>\",\r\n\"meetingId\": \"<meetingId>\",\r\n\"externalMeetingId\": \"<externalMeetingId>\",\r\n\"attendeeId\": \"<attendeeId>\",\r\n\"externalUserId\": \"<externalUserId>\",\r\n\"mediaRegion\": \"<mediaRegion>\",\r\n\"networkType\":\"<networkType>\"\r\n}\r\n}"}'
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref DeadLetterQueueName
+      MessageRetentionPeriod: !Ref MessageRetentionPeriod
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Condition: CreateAlarm
+    Properties:
+      DisplayName: !Sub ${DeadLetterQueueName}-topic
+      Subscription:
+        - Endpoint: !Ref AlarmEmail
+          Protocol: email
+  QueueDepthAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: CreateAlarm
+    Properties:
+      AlarmDescription: Alarm if the Salesforce dead-letter queue depth exceeds the specified number of messages.
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt DeadLetterQueue.QueueName
+      Statistic: Sum
+      Period: !Ref QueueDepthAlarmPeriod
+      EvaluationPeriods: !Ref QueueDepthAlarmEvaluationPeriods
+      Threshold: !Ref QueueDepthAlarmThreshold
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmTopic
+      InsufficientDataActions:
+        - !Ref AlarmTopic
