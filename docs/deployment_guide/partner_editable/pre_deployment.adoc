@@ -1,3 +1,7 @@
 //Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+
+* A new AWS Account is required to install Virtual Care. This can be done as a new standalone AWS Account or as an account in an existing AWS Organization.
+* To create a new standalone AWS Account refer to the following instructions - https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/
+* To create an AWS Account using AWS Organiation refer to the following instructions - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new
