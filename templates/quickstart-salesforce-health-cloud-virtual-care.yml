@@ -4,6 +4,11 @@ Metadata:
   LintSpellExclude:
     - Salesforce
     - OAuth
+  SentenceCaseExclude:
+    - Developer
+    - Edition
+    - Production
+    - Trial
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -98,18 +103,18 @@ Parameters:
     Description: "Salesforce instance domain. Example: 'https://<InstanceName>.my.salesforce.com/'."
   SandboxName:
     Type: String
-    Description: If using a sandbox instance, enter the sandbox name; otherwise, leave blank.
+    Description: If using a Salesforce sandbox, enter the sandbox name; otherwise, leave blank.
     Default: ''
   IsEnhancedSandbox:
     Type: String
-    Description: Enable if using a sandbox with an enhanced domain.
+    Description: Enable if using a Salesforce sandbox with an enhanced domain.
     AllowedValues:
       - 'true'
       - 'false'
     Default: 'false'
   PlatformEndpointVersion:
     Type: String
-    Description: Salesforce platform event version to use.
+    Description: Salesforce platform event endpoint version to use.
     Default: v55.0
   IsCustomPlatformEventEndpoint:
     Type: String
@@ -120,7 +125,11 @@ Parameters:
     Default: 'false'
   RateLimit:
     Type: Number
-    Description: Rate limit for Salesforce from Amazon EventBridge.
+    Description: >-
+      Rate limit for Amazon EventBridge to the Salesforce platform event endpoint. The default soft limit is 25 for
+      Production organizations & Sandboxes, and the default soft limit is 5 for Developer Edition & Trial
+      organizations. Reference:
+      'https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm'.
     MinValue: 1
     Default: 25
   MaximumRetryAttempts:
@@ -139,7 +148,8 @@ Parameters:
     Default: 400 # 6.7 minutes
   DeadLetterQueueName:
     Type: String
-    Description: Name of the Amazon SQS dead-letter queue for events that failed to deliver.
+    Description: >-
+      Name of the Amazon SQS dead-letter queue for temporarily storing events that failed to deliver.
     AllowedPattern: '[a-zA-Z0-9-_]+'
     ConstraintDescription: Can only include alphanumeric characters, hyphens, or underscores. 1 to 80 in length.
     MinLength: 1
@@ -171,8 +181,8 @@ Parameters:
   QueueDepthAlarmThreshold:
     Type: Number
     Description: >-
-      The threshold number of messages in the dead-letter queue to trigger an alarm. If set to 0, the
-      dead-letter queue monitoring and email alerts will be disabled.
+      The threshold number of messages in the dead-letter queue to trigger an alarm. If set to 0, the Amazon CloudWatch
+      alarm and Amazon SNS topic will not be deployed- disabling the dead-letter queue monitoring and email alerts.
     MinValue: 0
     Default: 10
 Conditions:
