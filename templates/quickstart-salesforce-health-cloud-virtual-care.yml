@@ -10,13 +10,13 @@ Metadata:
       - Label:
           default: Salesforce credentials
         Parameters:
-          - SalesforceUsername
-          - SalesforcePassword
+          - Username
+          - Password
       - Label:
           default: Salesforce OAuth configuration
         Parameters:
-          - SalesforceOAuthConsumerKey
-          - SalesforceOAuthConsumerSecret
+          - OAuthClientID
+          - OAuthClientSecret
       - Label:
           default: Salesforce platform event endpoint configuration
         Parameters:
@@ -24,7 +24,7 @@ Metadata:
           - SandboxName
           - IsEnhancedSandbox
           - PlatformEndpointVersion
-          - SalesforceInvocationRateLimitParam
+          - RateLimit
           - IsCustomPlatformEventEndpoint
       - Label:
           default: Event processing retry configuration
@@ -41,13 +41,13 @@ Metadata:
           - QueueDepthAlarmEvaluationPeriods
           - QueueDepthAlarmThreshold
     ParameterLabels:
-      SalesforceUsername:
+      Username:
         default: Username
-      SalesforcePassword:
+      Password:
         default: Password
-      SalesforceOAuthConsumerKey:
+      OAuthClientID:
         default: OAuth client ID
-      SalesforceOAuthConsumerSecret:
+      OAuthClientSecret:
         default: OAuth client secret
       InstanceName:
         default: Instance name
@@ -59,7 +59,7 @@ Metadata:
         default: Version
       IsCustomPlatformEventEndpoint:
         default: Is this a custom platform event endpoint?
-      SalesforceInvocationRateLimitParam:
+      RateLimit:
         default: Rate limit
       MaximumRetryAttempts:
         default: Max retries
@@ -78,18 +78,18 @@ Metadata:
       QueueDepthAlarmThreshold:
         default: Alarm threshold
 Parameters:
-  SalesforceUsername:
+  Username:
     Type: String
     Description: Salesforce username.
-  SalesforcePassword:
+  Password:
     Type: String
     Description: Salesforce password.
     NoEcho: True
-  SalesforceOAuthConsumerKey:
+  OAuthClientID:
     Type: String
     Description: Salesforce provided OAuth client ID.
     NoEcho: True
-  SalesforceOAuthConsumerSecret:
+  OAuthClientSecret:
     Type: String
     Description: Salesforce provided OAuth client secret.
     NoEcho: True
@@ -118,7 +118,7 @@ Parameters:
       - 'true'
       - 'false'
     Default: 'false'
-  SalesforceInvocationRateLimitParam:
+  RateLimit:
     Type: Number
     Description: Rate limit for Salesforce from Amazon EventBridge.
     MinValue: 1
@@ -210,7 +210,7 @@ Resources:
     Properties:
       Name: SalesforceOAuthSecret
       Description: OAuth connection credential secret.
-      SecretString: !Sub '{"ClientID": "${SalesforceOAuthConsumerKey}", "ClientSecret": "${SalesforceOAuthConsumerSecret}", "Username": "${SalesforceUsername}", "Password": "${SalesforcePassword}"}'
+      SecretString: !Sub '{"ClientID": "${OAuthClientID}", "ClientSecret": "${OAuthClientSecret}", "Username": "${Username}", "Password": "${Password}"}'
   SalesforceOAuthConnection:
     Type: AWS::Events::Connection
     Properties:
@@ -247,7 +247,7 @@ Resources:
       InvocationEndpoint: !Sub
         - https://${InstanceName}.my.salesforce.com/services/data/${PlatformEndpointVersion}/sobjects/ServiceProviderEvent${Suffix}
         - Suffix: !If [IsCustomPlatformEventEndpoint, __e, '']
-      InvocationRateLimitPerSecond: !Ref SalesforceInvocationRateLimitParam
+      InvocationRateLimitPerSecond: !Ref RateLimit
   SalesforceEventRule:
     Type: AWS::Events::Rule
     Properties:
