@@ -14,3 +14,5 @@ As shown in <<architecture1>>, this Quick Start sets up the following:
 * An Amazon EventBridge Rule that filters aws.chime events and a pre-defined Input Transformer to create a Salesforce Platform event.
 * An Amazon EventBridge API Destination with a pre-defined Connection and Secret using Salesforce Connected App details.
 * An Amazon SQS queue acting as a Dead Letter Queue for failed event delivery using AWS KMS to encrypt messages.
+* An Amazon Cloudwatch Alarm that is monitoring the Amazon SQS Queue depth. 
+* An Amazon SNS Topic to receive alarm events and support notification to interested parties. 
