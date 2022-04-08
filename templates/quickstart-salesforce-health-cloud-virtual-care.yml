@@ -84,6 +84,7 @@ Parameters:
   SalesforceAuthorizationEndpoint:
     Type: String
     Description: Salesforce OAuth authorization endpoint.
+    Default: https://login.salesforce.com/services/oauth2/authorize
   SalesforcePlatformEventEndPoint:
     Type: String
     Description: Salesforce URI to publish the event to.
