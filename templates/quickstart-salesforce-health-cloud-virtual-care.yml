@@ -17,9 +17,15 @@ Metadata:
         Parameters:
           - SalesforceOAuthConsumerKey
           - SalesforceOAuthConsumerSecret
-          - SalesforceAuthorizationEndpoint
-          - SalesforcePlatformEventEndPoint
+      - Label:
+          default: Salesforce platform event endpoint configuration
+        Parameters:
+          - InstanceName
+          - SandboxName
+          - IsEnhancedSandbox
+          - PlatformEndpointVersion
           - SalesforceInvocationRateLimitParam
+          - IsCustomPlatformEventEndpoint
       - Label:
           default: Event processing retry configuration
         Parameters:
@@ -43,10 +49,16 @@ Metadata:
         default: OAuth client ID
       SalesforceOAuthConsumerSecret:
         default: OAuth client secret
-      SalesforceAuthorizationEndpoint:
-        default: OAuth authorization endpoint
-      SalesforcePlatformEventEndPoint:
-        default: Event endpoint
+      InstanceName:
+        default: Instance name
+      SandboxName:
+        default: Sandbox name
+      IsEnhancedSandbox:
+        default: Enhanced sandbox domain
+      PlatformEndpointVersion:
+        default: Version
+      IsCustomPlatformEventEndpoint:
+        default: Is this a custom platform event endpoint?
       SalesforceInvocationRateLimitParam:
         default: Rate limit
       MaximumRetryAttempts:
@@ -81,13 +93,31 @@ Parameters:
     Type: String
     Description: Salesforce provided OAuth client secret.
     NoEcho: True
-  SalesforceAuthorizationEndpoint:
+  InstanceName:
     Type: String
-    Description: Salesforce OAuth authorization endpoint.
-    Default: https://login.salesforce.com/services/oauth2/authorize
-  SalesforcePlatformEventEndPoint:
+    Description: "Salesforce instance domain. Example: 'https://<InstanceName>.my.salesforce.com/'."
+  SandboxName:
     Type: String
-    Description: Salesforce URI to publish the event to.
+    Description: If using a sandbox instance, enter the sandbox name; otherwise, leave blank.
+    Default: ''
+  IsEnhancedSandbox:
+    Type: String
+    Description: Enable if using a sandbox with an enhanced domain.
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Default: 'false'
+  PlatformEndpointVersion:
+    Type: String
+    Description: Salesforce platform event version to use.
+    Default: v55.0
+  IsCustomPlatformEventEndpoint:
+    Type: String
+    Description: Enable if using a Salesforce custom platform event endpoint for testing purposes.
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Default: 'false'
   SalesforceInvocationRateLimitParam:
     Type: Number
     Description: Rate limit for Salesforce from Amazon EventBridge.
@@ -146,6 +176,9 @@ Parameters:
     MinValue: 0
     Default: 10
 Conditions:
+  IsEnhancedSandbox: !And [!Not [!Equals [!Ref SandboxName, '']], !Equals [!Ref IsEnhancedSandbox, 'true']]
+  IsCustomPlatformEventEndpoint: !Equals [!Ref IsCustomPlatformEventEndpoint, 'true']
+  IsSandbox: !Not [!Equals [!Ref SandboxName, '']]
   CreateAlarm: !Not [!Equals [!Ref QueueDepthAlarmThreshold, 0]]
 Resources:
   SalesforceApiDestinationRole:
@@ -185,7 +218,10 @@ Resources:
       AuthorizationType: OAUTH_CLIENT_CREDENTIALS
       AuthParameters:
         OAuthParameters:
-          AuthorizationEndpoint: !Ref SalesforceAuthorizationEndpoint
+          AuthorizationEndpoint: !Sub
+            - https://${InstanceName}${SandboxSuffix}${EnhancedSandboxDomain}.my.salesforce.com/services/oauth2/token
+            - SandboxSuffix: !If [IsSandbox, !Sub '--${SandboxName}', '']
+              EnhancedSandboxDomain: !If [IsEnhancedSandbox, '.sandbox', '']
           ClientParameters:
             ClientID: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientID}}'
             ClientSecret: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientSecret}}'
@@ -208,7 +244,9 @@ Resources:
       ConnectionArn: !GetAtt SalesforceOAuthConnection.Arn
       Description: API destination to send events to Salesforce platform event endpoint.
       HttpMethod: POST
-      InvocationEndpoint: !Ref SalesforcePlatformEventEndPoint
+      InvocationEndpoint: !Sub
+        - https://${InstanceName}.my.salesforce.com/services/data/${PlatformEndpointVersion}/sobjects/ServiceProviderEvent${Suffix}
+        - Suffix: !If [IsCustomPlatformEventEndpoint, __e, '']
       InvocationRateLimitPerSecond: !Ref SalesforceInvocationRateLimitParam
   SalesforceEventRule:
     Type: AWS::Events::Rule
