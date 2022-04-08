@@ -109,8 +109,8 @@ Parameters:
     Default: 400 # 6.7 minutes
   DeadLetterQueueName:
     Type: String
-    Description: Name for the Salesforce dead-letter queue.
-    AllowedPattern: "[a-zA-Z0-9-_]+"
+    Description: Name of the Amazon SQS dead-letter queue for events that failed to deliver.
+    AllowedPattern: '[a-zA-Z0-9-_]+'
     ConstraintDescription: Can only include alphanumeric characters, hyphens, or underscores. 1 to 80 in length.
     MinLength: 1
     MaxLength: 80
@@ -134,15 +134,15 @@ Parameters:
   QueueDepthAlarmEvaluationPeriods:
     Type: Number
     Description: >-
-      The number of periods over which the number messages in the Salesforce dead-letter queue is compared to the
-      specified threshold.
+      The number of periods over which the number messages in the dead-letter queue is compared to the specified
+      threshold.
     MinValue: 1
     Default: 1
   QueueDepthAlarmThreshold:
     Type: Number
     Description: >-
-      The threshold number of messages in the Salesforce dead-letter queue to trigger an alarm. If set to 0, the
-      Amazon SNS topic and Amazon CloudWatch alarm will not be created.
+      The threshold number of messages in the dead-letter queue to trigger an alarm. If set to 0, the
+      dead-letter queue monitoring and email alerts will be disabled.
     MinValue: 0
     Default: 10
 Conditions:
