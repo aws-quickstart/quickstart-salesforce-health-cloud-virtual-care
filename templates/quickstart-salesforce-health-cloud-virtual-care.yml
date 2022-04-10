@@ -114,9 +114,9 @@ Parameters:
     Description: >-
       Choose yes if using a Salesforce sandbox with an enhanced domain.
     AllowedValues:
-      - 'true'
-      - 'false'
-    Default: 'false'
+      - 'yes'
+      - 'no'
+    Default: 'no'
   PlatformEndpointVersion:
     Type: String
     Description: Salesforce platform event endpoint version to use.
@@ -127,9 +127,9 @@ Parameters:
       Choose yes if using a Salesforce custom platform event endpoint for
       testing purposes.
     AllowedValues:
-      - 'true'
-      - 'false'
-    Default: 'false'
+      - 'yes'
+      - 'no'
+    Default: 'no'
   RateLimit:
     Type: Number
     Description: >-
