@@ -1,7 +1,7 @@
 project:
   name: quickstart-salesforce-health-cloud-virtual-care
   owner: quickstart-eng@amazon.com
-  template: templates/quickstart-salesforce-health-cloud-virtual-care.yml
+  template: templates/salesforce-health-cloud-virtual-care.template.yaml
   parameters:
 tests:
   default:
