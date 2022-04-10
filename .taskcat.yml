@@ -3,5 +3,14 @@ project:
   owner: quickstart-eng@amazon.com
   template: templates/salesforce-health-cloud-virtual-care.template.yaml
   parameters:
+    Username: override
+    Password: override
+    OAuthClientID: override
+    OAuthClientSecret: override
+    InstanceName: override
+    PlatformEndpointVersion: override
+    IsCustomPlatformEventEndpoint: override
+    RateLimit: 5
+    AlarmEmail: override
 tests:
   default:
