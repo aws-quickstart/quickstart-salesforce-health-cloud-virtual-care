@@ -239,7 +239,13 @@ Resources:
     Properties:
       Name: SalesforceOAuthSecret
       Description: OAuth connection credential secret.
-      SecretString: !Sub '{"ClientID": "${OAuthClientID}", "ClientSecret": "${OAuthClientSecret}", "Username": "${Username}", "Password": "${Password}"}'
+      SecretString: !Sub >-
+        {
+          "ClientID": "${OAuthClientID}",
+          "ClientSecret": "${OAuthClientSecret}",
+          "Username": "${Username}",
+          "Password": "${Password}"
+        }
   SalesforceOAuthConnection:
     Type: AWS::Events::Connection
     Properties:
@@ -312,7 +318,28 @@ Resources:
               externalUserId: $.detail.externalUserId
               mediaRegion: $.detail.mediaRegion
               networkType: $.detail.networkType
-            InputTemplate: '{"ServiceName" : "<source>","Json" : "{\r\n\"source\": \"<source>\",\r\n\"account\": \"<account>\",\r\n\"id\": \"<id>\",\r\n\"region\": \"<region>\",\r\n\"detail-type\": \"<detail-type>\",\r\n\"time\": \"<time>\",\r\n\"detail\": {\r\n\"eventType\": \"<eventType>\",\r\n\"timestamp\": \"<timestamp>\",\r\n\"meetingId\": \"<meetingId>\",\r\n\"externalMeetingId\": \"<externalMeetingId>\",\r\n\"attendeeId\": \"<attendeeId>\",\r\n\"externalUserId\": \"<externalUserId>\",\r\n\"mediaRegion\": \"<mediaRegion>\",\r\n\"networkType\":\"<networkType>\"\r\n}\r\n}"}'
+            InputTemplate: >-
+              {
+                "ServiceName": "<source>",
+                "Json": "{
+                  \"source\": \"<source>\",
+                  \"account\": \"<account>\",
+                  \"id\": \"<id>\",
+                  \"region\": \"<region>\",
+                  \"detail-type\": \"<detail-type>\",
+                  \"time\": \"<time>\",
+                  \"detail\": {
+                    \"eventType\": \"<eventType>\",
+                    \"timestamp\": \"<timestamp>\",
+                    \"meetingId\": \"<meetingId>\",
+                    \"externalMeetingId\": \"<externalMeetingId>\",
+                    \"attendeeId\": \"<attendeeId>\",
+                    \"externalUserId\": \"<externalUserId>\",
+                    \"mediaRegion\": \"<mediaRegion>\",
+                    \"networkType\": \"<networkType>\"
+                  }
+                }"
+              }
   DeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
