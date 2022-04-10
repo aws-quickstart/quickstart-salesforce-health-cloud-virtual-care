@@ -100,14 +100,19 @@ Parameters:
     NoEcho: True
   InstanceName:
     Type: String
-    Description: "Salesforce instance domain. Example: 'https://<InstanceName>.my.salesforce.com/'."
+    Description: >-
+      Salesforce instance domain. Example:
+      'https://<InstanceName>.my.salesforce.com/'.
   SandboxName:
     Type: String
-    Description: If using a Salesforce sandbox, enter the sandbox name; otherwise, leave blank.
+    Description: >-
+      (Optional) If using a Salesforce sandbox, enter the sandbox name;
+      otherwise, leave blank.
     Default: ''
   IsEnhancedSandbox:
     Type: String
-    Description: Enable if using a Salesforce sandbox with an enhanced domain.
+    Description: >-
+      Choose yes if using a Salesforce sandbox with an enhanced domain.
     AllowedValues:
       - 'true'
       - 'false'
@@ -118,7 +123,9 @@ Parameters:
     Default: v55.0
   IsCustomPlatformEventEndpoint:
     Type: String
-    Description: Enable if using a Salesforce custom platform event endpoint for testing purposes.
+    Description: >-
+      Choose yes if using a Salesforce custom platform event endpoint for
+      testing purposes.
     AllowedValues:
       - 'true'
       - 'false'
@@ -126,8 +133,9 @@ Parameters:
   RateLimit:
     Type: Number
     Description: >-
-      Rate limit for Amazon EventBridge to the Salesforce platform event endpoint. The default soft limit is 25 for
-      Production organizations & Sandboxes, and the default soft limit is 5 for Developer Edition & Trial
+      Rate limit for Amazon EventBridge to the Salesforce platform event
+      endpoint. The default soft limit is 25 for Production organizations &
+      Sandboxes, and the default soft limit is 5 for Developer Edition & Trial
       organizations. Reference:
       'https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm'.
     MinValue: 1
@@ -135,29 +143,37 @@ Parameters:
   MaximumRetryAttempts:
     Type: Number
     Description: >-
-      The maximum number of retry attempts to make before the request fails. Retry attempts continue until either the
-      maximum number of attempts is made or until the duration of the MaximumEventAgeInSeconds is met.
+      The maximum number of retry attempts to make before the request fails.
+      Retry attempts continue until either the maximum number of attempts is
+      made or until the duration of the MaximumEventAgeInSeconds is met.
     MinValue: 0
     MaxValue: 185
     Default: 4
   MaximumEventAgeInSeconds:
     Type: Number
-    Description: The maximum amount of time, in seconds, to continue to make retry attempts.
+    Description: >-
+      The maximum amount of time, in seconds, to continue to make retry
+      attempts.
     MinValue: 60 # 1 minute
     MaxValue: 86400 # 1 day
     Default: 400 # 6.7 minutes
   DeadLetterQueueName:
     Type: String
     Description: >-
-      Name of the Amazon SQS dead-letter queue for temporarily storing events that failed to deliver.
+      Name of the Amazon SQS dead-letter queue for temporarily storing events
+      that failed to deliver.
     AllowedPattern: '[a-zA-Z0-9-_]+'
-    ConstraintDescription: Can only include alphanumeric characters, hyphens, or underscores. 1 to 80 in length.
+    ConstraintDescription: >-
+      Can only include alphanumeric characters, hyphens, or underscores.
+      1 to 80 in length.
     MinLength: 1
     MaxLength: 80
     Default: SalesforceDLQ
   MessageRetentionPeriod:
     Type: Number
-    Description: The number of seconds that messages are retained in the dead-letter queue.
+    Description: >-
+      The number of seconds that messages are retained in the dead-letter
+      queue.
     MinValue: 60 # 1 minute
     MaxValue: 1209600 # 14 days
     Default: 345600 # 4 days
@@ -168,21 +184,24 @@ Parameters:
   QueueDepthAlarmPeriod:
     Type: Number
     Description: >-
-      The period, in seconds, over which the statistic is applied. Valid values are 10, 30, 60, and any multiple of 60.
+      The period, in seconds, over which the statistic is applied. Valid values
+      are 10, 30, 60, and any multiple of 60.
     MinValue: 10
     Default: 300 # 5 minutes
   QueueDepthAlarmEvaluationPeriods:
     Type: Number
     Description: >-
-      The number of periods over which the number messages in the dead-letter queue is compared to the specified
-      threshold.
+      The number of periods over which the number messages in the dead-letter
+      queue is compared to the specified threshold.
     MinValue: 1
     Default: 1
   QueueDepthAlarmThreshold:
     Type: Number
     Description: >-
-      The threshold number of messages in the dead-letter queue to trigger an alarm. If set to 0, the Amazon CloudWatch
-      alarm and Amazon SNS topic will not be deployed- disabling the dead-letter queue monitoring and email alerts.
+      The threshold number of messages in the dead-letter queue to trigger an
+      alarm. If set to 0, the Amazon CloudWatch alarm and Amazon SNS topic will
+      not be deployed- disabling the dead-letter queue monitoring and email
+      alerts.
     MinValue: 0
     Default: 10
 Conditions:
@@ -252,7 +271,8 @@ Resources:
     Type: AWS::Events::ApiDestination
     Properties:
       ConnectionArn: !GetAtt SalesforceOAuthConnection.Arn
-      Description: API destination to send events to Salesforce platform event endpoint.
+      Description: >-
+        API destination to send events to Salesforce platform event endpoint.
       HttpMethod: POST
       InvocationEndpoint: !Sub
         - https://${InstanceName}.my.salesforce.com/services/data/${PlatformEndpointVersion}/sobjects/ServiceProviderEvent${Suffix}
@@ -310,7 +330,9 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     Condition: CreateAlarm
     Properties:
-      AlarmDescription: Alarm if the Salesforce dead-letter queue depth exceeds the specified number of messages.
+      AlarmDescription: >-
+        Alarm if the Salesforce dead-letter queue depth exceeds the specified
+        number of messages.
       Namespace: AWS/SQS
       MetricName: ApproximateNumberOfMessagesVisible
       Dimensions:
