@@ -418,8 +418,7 @@ Resources:
               externalUserId: $.detail.externalUserId
               mediaRegion: $.detail.mediaRegion
               networkType: $.detail.networkType
-            InputTemplate: >-
-              {
+            InputTemplate: '{
                 "ServiceName": "<source>",
                 "Json": "{
                   \"source\": \"<source>\",
@@ -439,7 +438,7 @@ Resources:
                     \"networkType\": \"<networkType>\"
                   }
                 }"
-              }
+              }'
   DeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
