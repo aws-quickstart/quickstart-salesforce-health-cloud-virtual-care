@@ -217,7 +217,7 @@ Parameters:
     Type: Number
     Description: >-
       The number of seconds that messages are retained in the dead-letter
-      queue.
+      queue. The default is 4 days.
     MinValue: 60 # 1 minute
     MaxValue: 1209600 # 14 days
     Default: 345600 # 4 days
@@ -311,7 +311,9 @@ Resources:
   SalesforceApiDestinationRole:
     Type: AWS::IAM::Role
     Properties:
-      Description: Amazon EventBus API Destination Role
+      Description: >-
+        Amazon EventBridge destination role for invoking the Salesforce service
+        provider event API endpoint.
       RoleName: Salesforce_EventBridge_Invoke_Api_Destination
       AssumeRolePolicyDocument:
         Version: 2012-10-17
