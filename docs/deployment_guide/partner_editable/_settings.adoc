@@ -1,13 +1,13 @@
 :quickstart-project-name: quickstart-salesforce-health-cloud-virtual-care
 :quickstart-github-org: aws-quickstart
-:partner-product-name: Full Product Name
-:partner-product-short-name: Product Name
-:partner-company-name: Example Company Name, Ltd.
+:partner-product-name: Salesforce Health Cloud Virtual Care
+:partner-product-short-name: Virtual Care
+:partner-company-name: Salesforce, Inc
 :doc-month: April
 :doc-year: 2022
-:partner-contributors: John Smith, {partner-company-name}
+:partner-contributors: Harsha Talkad and Vandana Sreenivasa Rao, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
-// :aws-contributors: Janine Singh, AWS IoT Partner team
+:aws-contributors: Chris Riley, AWS BDSI SACS Architecture team
 :aws-ia-contributors: Troy Lindsay and Dylan Owen, AWS Integration & Automation team
 :deployment_time: 15 minutes
 :default_deployment_region: us-east-1
