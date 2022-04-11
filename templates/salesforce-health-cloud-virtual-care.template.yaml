@@ -41,6 +41,8 @@ Metadata:
           default: Dead letter queue configuration
         Parameters:
           - DeadLetterQueueName
+          - CmkAlias
+          - KmsDataKeyReusePeriod
           - MessageRetentionPeriod
           - AlarmEmail
           - QueueDepthAlarmPeriod
@@ -79,6 +81,10 @@ Metadata:
         default: Max age
       DeadLetterQueueName:
         default: Name
+      CmkAlias:
+        default: CMK alias
+      KmsDataKeyReusePeriod:
+        default: Data key reuse period
       MessageRetentionPeriod:
         default: Retention period
       AlarmEmail:
@@ -182,6 +188,31 @@ Parameters:
     MinLength: 1
     MaxLength: 80
     Default: SalesforceDLQ
+  CmkAlias:
+    Type: String
+    Description: >-
+      The alias of a symmetric AWS KMS customer managed key (CMK) to use for
+      server-side encryption of any Amazon Chime messages stored in the
+      Amazon SQS dead-letter queue. The default is to use the AWS managed CMK
+      for Amazon SQS (SSE-SQS). Alternatively, enter the alias of your custom
+      CMK.
+    MinLength: 7
+    MaxLength: 262
+    AllowedPattern: ^alias/[a-zA-Z0-9/_-]+$
+    ConstraintDescription: >-
+      The CMK alias must start with 'alias/'. It can contain only alphanumeric
+      characters, forward slashes (/), underscores (_), and dashes (-).
+    Default: alias/aws/sqs
+  KmsDataKeyReusePeriod:
+    Type: Number
+    Description: >-
+      The length of time in seconds for which Amazon SQS can reuse a data key
+      to encrypt or decrypt messages before calling AWS KMS again. Note: A
+      shorter time period provides better security, but results in more calls
+      to AWS KMS, which might incur charges after Free Tier.
+    MinValue: 60 # 1 minute
+    MaxValue: 86400 # 1 day
+    Default: 300 # 5 minutes
   MessageRetentionPeriod:
     Type: Number
     Description: >-
@@ -412,6 +443,8 @@ Resources:
     Properties:
       QueueName: !Ref DeadLetterQueueName
       MessageRetentionPeriod: !Ref MessageRetentionPeriod
+      KmsMasterKeyId: !Ref CmkAlias
+      KmsDataKeyReusePeriodSeconds: !Ref KmsDataKeyReusePeriod
   AlarmTopic:
     Type: AWS::SNS::Topic
     Condition: CreateAlarm
