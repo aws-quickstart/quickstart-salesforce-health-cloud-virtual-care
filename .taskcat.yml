@@ -3,15 +3,15 @@ project:
   owner: quickstart-eng@amazon.com
   template: templates/salesforce-health-cloud-virtual-care.template.yaml
   parameters:
-    Username: override
-    Password: override
-    OAuthClientID: override
-    OAuthClientSecret: override
-    InstanceName: override
-    PlatformEndpointVersion: override
-    IsCustomPlatformEventEndpoint: override
-    RateLimit: 5
-    AlarmEmail: override
+    SalesforceUsername: override
+    SalesforcePassword: override
+    SalesforceOAuthClientID: override
+    SalesforceOAuthClientSecret: override
+    SalesforceInstanceName: override
+    SalesforcePlatformEventEndpointVersion: override
+    IsCustomSalesforcePlatformEventEndpoint: override
+    SalesforcePlatformEventEndpointRateLimit: 5
+    DlqAlarmEmail: override
     IamUserName: $[taskcat_genpass_8A]
     IamPassword: $[taskcat_genpass_128S]
     IamGroupName: $[taskcat_genpass_8A]

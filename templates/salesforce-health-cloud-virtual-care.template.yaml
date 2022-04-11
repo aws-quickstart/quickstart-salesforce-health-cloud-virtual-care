@@ -14,24 +14,24 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: Salesforce credentials
+          default: Salesforce credentials configuration
         Parameters:
-          - Username
-          - Password
+          - SalesforceUsername
+          - SalesforcePassword
       - Label:
           default: Salesforce OAuth configuration
         Parameters:
-          - OAuthClientID
-          - OAuthClientSecret
+          - SalesforceOAuthClientID
+          - SalesforceOAuthClientSecret
       - Label:
           default: Salesforce platform event endpoint configuration
         Parameters:
-          - InstanceName
-          - SandboxName
-          - IsEnhancedSandbox
-          - PlatformEndpointVersion
-          - RateLimit
-          - IsCustomPlatformEventEndpoint
+          - SalesforceInstanceName
+          - SalesforceSandboxName
+          - IsEnhancedSalesforceSandbox
+          - SalesforcePlatformEventEndpointVersion
+          - SalesforcePlatformEventEndpointRateLimit
+          - IsCustomSalesforcePlatformEventEndpoint
       - Label:
           default: Event processing retry configuration
         Parameters:
@@ -40,14 +40,14 @@ Metadata:
       - Label:
           default: Dead letter queue configuration
         Parameters:
-          - DeadLetterQueueName
-          - CmkAlias
-          - KmsDataKeyReusePeriod
-          - MessageRetentionPeriod
-          - AlarmEmail
-          - QueueDepthAlarmPeriod
-          - QueueDepthAlarmEvaluationPeriods
-          - QueueDepthAlarmThreshold
+          - DlqName
+          - DlqCmkAlias
+          - DlqKmsDataKeyReusePeriod
+          - DlqMessageRetentionPeriod
+          - DlqAlarmEmail
+          - DlqQueueDepthAlarmPeriod
+          - DlqQueueDepthAlarmEvaluationPeriods
+          - DlqQueueDepthAlarmThreshold
       - Label:
           default: Service account
         Parameters:
@@ -55,45 +55,45 @@ Metadata:
           - IamPassword
           - IamGroupName
     ParameterLabels:
-      Username:
+      SalesforceUsername:
         default: Username
-      Password:
+      SalesforcePassword:
         default: Password
-      OAuthClientID:
+      SalesforceOAuthClientID:
         default: OAuth client ID
-      OAuthClientSecret:
+      SalesforceOAuthClientSecret:
         default: OAuth client secret
-      InstanceName:
+      SalesforceInstanceName:
         default: Instance name
-      SandboxName:
+      SalesforceSandboxName:
         default: Sandbox name
-      IsEnhancedSandbox:
+      IsEnhancedSalesforceSandbox:
         default: Enhanced sandbox domain
-      PlatformEndpointVersion:
+      SalesforcePlatformEventEndpointVersion:
         default: Version
-      IsCustomPlatformEventEndpoint:
+      IsCustomSalesforcePlatformEventEndpoint:
         default: Is this a custom platform event endpoint?
-      RateLimit:
+      SalesforcePlatformEventEndpointRateLimit:
         default: Rate limit
       MaximumRetryAttempts:
         default: Max retries
       MaximumEventAgeInSeconds:
         default: Max age
-      DeadLetterQueueName:
+      DlqName:
         default: Name
-      CmkAlias:
+      DlqCmkAlias:
         default: CMK alias
-      KmsDataKeyReusePeriod:
+      DlqKmsDataKeyReusePeriod:
         default: Data key reuse period
-      MessageRetentionPeriod:
+      DlqMessageRetentionPeriod:
         default: Retention period
-      AlarmEmail:
+      DlqAlarmEmail:
         default: Email address
-      QueueDepthAlarmPeriod:
+      DlqQueueDepthAlarmPeriod:
         default: Alarm period
-      QueueDepthAlarmEvaluationPeriods:
+      DlqQueueDepthAlarmEvaluationPeriods:
         default: Alarm evaluation periods
-      QueueDepthAlarmThreshold:
+      DlqQueueDepthAlarmThreshold:
         default: Alarm threshold
       IamUserName:
         default: Username
@@ -102,33 +102,58 @@ Metadata:
       IamGroupName:
         default: Group name
 Parameters:
-  Username:
-    Type: String
-    Description: Salesforce username.
-  Password:
-    Type: String
-    Description: Salesforce password.
-    NoEcho: True
-  OAuthClientID:
-    Type: String
-    Description: Salesforce provided OAuth client ID.
-    NoEcho: True
-  OAuthClientSecret:
-    Type: String
-    Description: Salesforce provided OAuth client secret.
-    NoEcho: True
-  InstanceName:
+  SalesforceUsername:
     Type: String
     Description: >-
-      Salesforce instance domain. Example:
+      Salesforce username that will be stored in AWS Secrets Manager and used
+      by Amazon EventBridge for authentication when sending events.
+    MinLength: 1
+  SalesforcePassword:
+    Type: String
+    Description: >-
+      Salesforce password that will be stored in AWS Secrets Manager and used
+      by Amazon EventBridge for authentication when sending events.
+    NoEcho: True
+    MinLength: 8
+  SalesforceOAuthClientID:
+    Type: String
+    Description: >-
+      Salesforce provided OAuth client ID that will be stored in
+      AWS Secrets Manager and used by Amazon EventBridge for authentication
+      when sending events.
+    NoEcho: True
+    MinLength: 1
+  SalesforceOAuthClientSecret:
+    Type: String
+    Description: >-
+      Salesforce provided OAuth client secret that will be stored in
+      AWS Secrets Manager and used by Amazon EventBridge for authentication
+      when sending events.
+    NoEcho: True
+    MinLength: 1
+  SalesforceInstanceName:
+    Type: String
+    Description: >-
+      Salesforce instance name. Example:
       'https://<InstanceName>.my.salesforce.com/'.
-  SandboxName:
+    MinLength: 2
+    MaxLength: 60
+    AllowedPattern: ^[a-z][a-z0-9-]*[a-z]$
+    ConstraintDescription: >-
+      Can only include lowercase letters, numbers, and hyphens. Cannot start or
+      end with a hyphen.
+  SalesforceSandboxName:
     Type: String
     Description: >-
       (Optional) If using a Salesforce sandbox, enter the sandbox name;
       otherwise, leave blank.
     Default: ''
-  IsEnhancedSandbox:
+    MinLength: 0
+    MaxLength: 60
+    AllowedPattern: ^[a-z0-9-]*$
+    ConstraintDescription: >-
+      Can only include lowercase letters, numbers, and hyphens.
+  IsEnhancedSalesforceSandbox:
     Type: String
     Description: >-
       Choose yes if using a Salesforce sandbox with an enhanced domain.
@@ -136,11 +161,12 @@ Parameters:
       - 'yes'
       - 'no'
     Default: 'no'
-  PlatformEndpointVersion:
+  SalesforcePlatformEventEndpointVersion:
     Type: String
     Description: Salesforce platform event endpoint version to use.
+    MinLength: 1
     Default: v55.0
-  IsCustomPlatformEventEndpoint:
+  IsCustomSalesforcePlatformEventEndpoint:
     Type: String
     Description: >-
       Choose yes if using a Salesforce custom platform event endpoint for
@@ -149,7 +175,7 @@ Parameters:
       - 'yes'
       - 'no'
     Default: 'no'
-  RateLimit:
+  SalesforcePlatformEventEndpointRateLimit:
     Type: Number
     Description: >-
       Rate limit for Amazon EventBridge to the Salesforce platform event
@@ -176,19 +202,18 @@ Parameters:
     MinValue: 60 # 1 minute
     MaxValue: 86400 # 1 day
     Default: 400 # 6.7 minutes
-  DeadLetterQueueName:
+  DlqName:
     Type: String
     Description: >-
       Name of the Amazon SQS dead-letter queue for temporarily storing events
       that failed to deliver.
+    MinLength: 1
+    MaxLength: 80
     AllowedPattern: ^[a-zA-Z0-9-_]+$
     ConstraintDescription: >-
       Can only include alphanumeric characters, hyphens, or underscores.
-      1 to 80 in length.
-    MinLength: 1
-    MaxLength: 80
     Default: SalesforceDLQ
-  CmkAlias:
+  DlqCmkAlias:
     Type: String
     Description: >-
       The alias of a symmetric AWS KMS customer managed key (CMK) to use for
@@ -203,7 +228,7 @@ Parameters:
       The CMK alias must start with 'alias/'. It can contain only alphanumeric
       characters, forward slashes (/), underscores (_), and dashes (-).
     Default: alias/aws/sqs
-  KmsDataKeyReusePeriod:
+  DlqKmsDataKeyReusePeriod:
     Type: Number
     Description: >-
       The length of time in seconds for which Amazon SQS can reuse a data key
@@ -213,7 +238,7 @@ Parameters:
     MinValue: 60 # 1 minute
     MaxValue: 86400 # 1 day
     Default: 300 # 5 minutes
-  MessageRetentionPeriod:
+  DlqMessageRetentionPeriod:
     Type: Number
     Description: >-
       The number of seconds that messages are retained in the dead-letter
@@ -221,25 +246,25 @@ Parameters:
     MinValue: 60 # 1 minute
     MaxValue: 1209600 # 14 days
     Default: 345600 # 4 days
-  AlarmEmail:
+  DlqAlarmEmail:
     Type: String
     Description: Email address to notify of operational issues.
     MinLength: 1
-  QueueDepthAlarmPeriod:
+  DlqQueueDepthAlarmPeriod:
     Type: Number
     Description: >-
       The period, in seconds, over which the statistic is applied. Valid values
       are 10, 30, 60, and any multiple of 60.
     MinValue: 10
     Default: 300 # 5 minutes
-  QueueDepthAlarmEvaluationPeriods:
+  DlqQueueDepthAlarmEvaluationPeriods:
     Type: Number
     Description: >-
       The number of periods over which the number messages in the dead-letter
       queue is compared to the specified threshold.
     MinValue: 1
     Default: 1
-  QueueDepthAlarmThreshold:
+  DlqQueueDepthAlarmThreshold:
     Type: Number
     Description: >-
       The threshold number of messages in the dead-letter queue to trigger an
@@ -278,10 +303,10 @@ Parameters:
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
 Conditions:
-  IsEnhancedSandbox: !And [!Not [!Equals [!Ref SandboxName, '']], !Equals [!Ref IsEnhancedSandbox, 'true']]
-  IsCustomPlatformEventEndpoint: !Equals [!Ref IsCustomPlatformEventEndpoint, 'true']
-  IsSandbox: !Not [!Equals [!Ref SandboxName, '']]
-  CreateAlarm: !Not [!Equals [!Ref QueueDepthAlarmThreshold, 0]]
+  IsEnhancedSalesforceSandbox: !And [!Not [!Equals [!Ref SalesforceSandboxName, '']], !Equals [!Ref IsEnhancedSalesforceSandbox, 'true']]
+  IsCustomSalesforcePlatformEventEndpoint: !Equals [!Ref IsCustomSalesforcePlatformEventEndpoint, 'true']
+  IsSandbox: !Not [!Equals [!Ref SalesforceSandboxName, '']]
+  CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
   IamGroup:
     Type: AWS::IAM::Group
@@ -341,10 +366,10 @@ Resources:
       Description: OAuth connection credential secret.
       SecretString: !Sub >-
         {
-          "ClientID": "${OAuthClientID}",
-          "ClientSecret": "${OAuthClientSecret}",
-          "Username": "${Username}",
-          "Password": "${Password}"
+          "ClientID": "${SalesforceOAuthClientID}",
+          "ClientSecret": "${SalesforceOAuthClientSecret}",
+          "Username": "${SalesforceUsername}",
+          "Password": "${SalesforcePassword}"
         }
   SalesforceOAuthConnection:
     Type: AWS::Events::Connection
@@ -354,9 +379,9 @@ Resources:
       AuthParameters:
         OAuthParameters:
           AuthorizationEndpoint: !Sub
-            - https://${InstanceName}${SandboxSuffix}${EnhancedSandboxDomain}.my.salesforce.com/services/oauth2/token
-            - SandboxSuffix: !If [IsSandbox, !Sub '--${SandboxName}', '']
-              EnhancedSandboxDomain: !If [IsEnhancedSandbox, '.sandbox', '']
+            - https://${SalesforceInstanceName}${SandboxSuffix}${EnhancedSandboxDomain}.my.salesforce.com/services/oauth2/token
+            - SandboxSuffix: !If [IsSandbox, !Sub '--${SalesforceSandboxName}', '']
+              EnhancedSandboxDomain: !If [IsEnhancedSalesforceSandbox, '.sandbox', '']
           ClientParameters:
             ClientID: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientID}}'
             ClientSecret: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientSecret}}'
@@ -381,9 +406,9 @@ Resources:
         API destination to send events to Salesforce platform event endpoint.
       HttpMethod: POST
       InvocationEndpoint: !Sub
-        - https://${InstanceName}.my.salesforce.com/services/data/${PlatformEndpointVersion}/sobjects/ServiceProviderEvent${Suffix}
-        - Suffix: !If [IsCustomPlatformEventEndpoint, __e, '']
-      InvocationRateLimitPerSecond: !Ref RateLimit
+        - https://${SalesforceInstanceName}.my.salesforce.com/services/data/${SalesforcePlatformEventEndpointVersion}/sobjects/ServiceProviderEvent${Suffix}
+        - Suffix: !If [IsCustomSalesforcePlatformEventEndpoint, __e, '']
+      InvocationRateLimitPerSecond: !Ref SalesforcePlatformEventEndpointRateLimit
   SalesforceEventRule:
     Type: AWS::Events::Rule
     Properties:
@@ -442,17 +467,17 @@ Resources:
   DeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Ref DeadLetterQueueName
-      MessageRetentionPeriod: !Ref MessageRetentionPeriod
-      KmsMasterKeyId: !Ref CmkAlias
-      KmsDataKeyReusePeriodSeconds: !Ref KmsDataKeyReusePeriod
+      QueueName: !Ref DlqName
+      MessageRetentionPeriod: !Ref DlqMessageRetentionPeriod
+      KmsMasterKeyId: !Ref DlqCmkAlias
+      KmsDataKeyReusePeriodSeconds: !Ref DlqKmsDataKeyReusePeriod
   AlarmTopic:
     Type: AWS::SNS::Topic
     Condition: CreateAlarm
     Properties:
-      DisplayName: !Sub ${DeadLetterQueueName}-topic
+      DisplayName: !Sub ${DlqName}-topic
       Subscription:
-        - Endpoint: !Ref AlarmEmail
+        - Endpoint: !Ref DlqAlarmEmail
           Protocol: email
   QueueDepthAlarm:
     Type: AWS::CloudWatch::Alarm
@@ -467,9 +492,9 @@ Resources:
         - Name: QueueName
           Value: !GetAtt DeadLetterQueue.QueueName
       Statistic: Sum
-      Period: !Ref QueueDepthAlarmPeriod
-      EvaluationPeriods: !Ref QueueDepthAlarmEvaluationPeriods
-      Threshold: !Ref QueueDepthAlarmThreshold
+      Period: !Ref DlqQueueDepthAlarmPeriod
+      EvaluationPeriods: !Ref DlqQueueDepthAlarmEvaluationPeriods
+      Threshold: !Ref DlqQueueDepthAlarmThreshold
       ComparisonOperator: GreaterThanThreshold
       AlarmActions:
         - !Ref AlarmTopic
