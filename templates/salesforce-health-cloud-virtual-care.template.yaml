@@ -181,7 +181,7 @@ Parameters:
     Description: >-
       Name of the Amazon SQS dead-letter queue for temporarily storing events
       that failed to deliver.
-    AllowedPattern: '[a-zA-Z0-9-_]+'
+    AllowedPattern: ^[a-zA-Z0-9-_]+$
     ConstraintDescription: >-
       Can only include alphanumeric characters, hyphens, or underscores.
       1 to 80 in length.
@@ -255,7 +255,7 @@ Parameters:
       named credential service account.
     MinLength: 1
     MaxLength: 64
-    AllowedPattern: '[\w+=,.@-]+'
+    AllowedPattern: ^[\w+=,.@-]+$
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
   IamPassword:
@@ -274,7 +274,7 @@ Parameters:
       IAM policy.
     MinLength: 1
     MaxLength: 128
-    AllowedPattern: '[\w+=,.@-]+'
+    AllowedPattern: ^[\w+=,.@-]+$
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
 Conditions:
