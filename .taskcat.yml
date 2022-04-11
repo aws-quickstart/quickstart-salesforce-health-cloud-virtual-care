@@ -12,6 +12,9 @@ project:
     IsCustomPlatformEventEndpoint: override
     RateLimit: 5
     AlarmEmail: override
+    IamUserName: $[taskcat_genpass_8A]
+    IamPassword: $[taskcat_genpass_128S]
+    IamGroupName: $[taskcat_genpass_8A]
   regions:
     - af-south-1
     - ap-east-1

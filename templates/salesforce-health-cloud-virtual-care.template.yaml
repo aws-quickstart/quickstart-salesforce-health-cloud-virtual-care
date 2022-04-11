@@ -46,6 +46,12 @@ Metadata:
           - QueueDepthAlarmPeriod
           - QueueDepthAlarmEvaluationPeriods
           - QueueDepthAlarmThreshold
+      - Label:
+          default: Service account
+        Parameters:
+          - IamUserName
+          - IamPassword
+          - IamGroupName
     ParameterLabels:
       Username:
         default: Username
@@ -83,6 +89,12 @@ Metadata:
         default: Alarm evaluation periods
       QueueDepthAlarmThreshold:
         default: Alarm threshold
+      IamUserName:
+        default: Username
+      IamPassword:
+        default: Password
+      IamGroupName:
+        default: Group name
 Parameters:
   Username:
     Type: String
@@ -205,12 +217,66 @@ Parameters:
       alerts.
     MinValue: 0
     Default: 10
+  IamUserName:
+    Type: String
+    Description: >-
+      Username for the AWS IAM user account that will be used as the Salesforce
+      named credential service account.
+    MinLength: 1
+    MaxLength: 64
+    AllowedPattern: '[\w+=,.@-]+'
+    ConstraintDescription: >-
+      Use alphanumeric or any of the following symbols: _+=,.@-
+  IamPassword:
+    Type: String
+    Description: >-
+      Password for the AWS IAM user account that will be used as the Salesforce
+      named credential service account.
+    NoEcho: True
+    MinLength: 8
+    MaxLength: 128
+  IamGroupName:
+    Type: String
+    Description: >-
+      Name for the AWS IAM group that grants the AWS IAM user account the
+      necessary permissions via the associated AWS managed AmazonChimeSDK
+      IAM policy.
+    MinLength: 1
+    MaxLength: 128
+    AllowedPattern: '[\w+=,.@-]+'
+    ConstraintDescription: >-
+      Use alphanumeric or any of the following symbols: _+=,.@-
 Conditions:
   IsEnhancedSandbox: !And [!Not [!Equals [!Ref SandboxName, '']], !Equals [!Ref IsEnhancedSandbox, 'true']]
   IsCustomPlatformEventEndpoint: !Equals [!Ref IsCustomPlatformEventEndpoint, 'true']
   IsSandbox: !Not [!Equals [!Ref SandboxName, '']]
   CreateAlarm: !Not [!Equals [!Ref QueueDepthAlarmThreshold, 0]]
 Resources:
+  IamGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Ref IamGroupName
+      Path: /salesforce/
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonChimeSDK
+  IamUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref IamUserName
+      LoginProfile:
+        Password: !Ref IamPassword
+        PasswordResetRequired: False
+      Path: /salesforce/
+      Groups:
+        - !Ref IamGroup
+  ChimeTranscriptionSlr:
+    Type: AWS::IAM::ServiceLinkedRole
+    Properties:
+      AWSServiceName: transcription.chime.amazonaws.com
+      Description: >-
+        Amazon Chime service linked role with pre-defined permissions to allow
+        the service to call other AWS services on your behalf for performing
+        transcription.
   SalesforceApiDestinationRole:
     Type: AWS::IAM::Role
     Properties:
