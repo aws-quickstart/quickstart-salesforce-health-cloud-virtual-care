@@ -7,9 +7,8 @@ project:
     SalesforcePassword: override
     SalesforceOAuthClientID: override
     SalesforceOAuthClientSecret: override
-    SalesforceInstanceName: override
-    SalesforcePlatformEventEndpointVersion: override
-    IsCustomSalesforcePlatformEventEndpoint: override
+    SalesforceAuthorizationEndpoint: override
+    SalesforcePlatformEventEndpoint: override
     SalesforcePlatformEventEndpointRateLimit: 5
     DlqAlarmEmail: override
     IamUserName: $[taskcat_genpass_8A]
