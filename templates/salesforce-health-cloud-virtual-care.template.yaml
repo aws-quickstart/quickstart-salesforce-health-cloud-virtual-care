@@ -21,17 +21,14 @@ Metadata:
       - Label:
           default: Salesforce OAuth configuration
         Parameters:
+          - SalesforceAuthorizationEndpoint
           - SalesforceOAuthClientID
           - SalesforceOAuthClientSecret
       - Label:
           default: Salesforce platform event endpoint configuration
         Parameters:
-          - SalesforceInstanceName
-          - SalesforceSandboxName
-          - IsEnhancedSalesforceSandbox
-          - SalesforcePlatformEventEndpointVersion
+          - SalesforcePlatformEventEndpoint
           - SalesforcePlatformEventEndpointRateLimit
-          - IsCustomSalesforcePlatformEventEndpoint
       - Label:
           default: Event processing retry configuration
         Parameters:
@@ -60,19 +57,13 @@ Metadata:
       SalesforcePassword:
         default: Password
       SalesforceOAuthClientID:
-        default: OAuth client ID
+        default: Client ID
       SalesforceOAuthClientSecret:
-        default: OAuth client secret
-      SalesforceInstanceName:
-        default: Instance name
-      SalesforceSandboxName:
-        default: Sandbox name
-      IsEnhancedSalesforceSandbox:
-        default: Enhanced sandbox domain
-      SalesforcePlatformEventEndpointVersion:
-        default: Version
-      IsCustomSalesforcePlatformEventEndpoint:
-        default: Is this a custom platform event endpoint?
+        default: Client secret
+      SalesforceAuthorizationEndpoint:
+        default: Endpoint URL
+      SalesforcePlatformEventEndpoint:
+        default: Endpoint URL
       SalesforcePlatformEventEndpointRateLimit:
         default: Rate limit
       MaximumRetryAttempts:
@@ -131,50 +122,26 @@ Parameters:
       when sending events.
     NoEcho: True
     MinLength: 1
-  SalesforceInstanceName:
+  SalesforceAuthorizationEndpoint:
     Type: String
     Description: >-
-      Salesforce instance name. Example:
-      'https://<InstanceName>.my.salesforce.com/'.
-    MinLength: 2
-    MaxLength: 60
-    AllowedPattern: ^[a-z][a-z0-9-]*[a-z]$
+      Salesforce OAuth authorization endpoint URL. Example:
+      'https://<InstanceName>.my.salesforce.com/services/oauth2/token'.
+    MinLength: 31
+    AllowedPattern: ^https:\/\/[a-z]([a-z0-9-\.]*[a-z])*/services/oauth2/token$
     ConstraintDescription: >-
-      Can only include lowercase letters, numbers, and hyphens. Cannot start or
-      end with a hyphen.
-  SalesforceSandboxName:
+      Must be a valid Salesforce authorization endpoint URL.
+  SalesforcePlatformEventEndpoint:
     Type: String
     Description: >-
-      (Optional) If using a Salesforce sandbox, enter the sandbox name;
-      otherwise, leave blank.
-    Default: ''
-    MinLength: 0
-    MaxLength: 60
-    AllowedPattern: ^[a-z0-9-]*$
+      Salesforce platform event endpoint URL. Example 1:
+      'https://<InstanceName>.my.salesforce.com/services/data/v55.0/sobjects/ServiceProviderEvent'.
+      Example 2 (custom platform event for testing):
+      'https://<InstanceName>.my.salesforce.com/services/data/v55.0/sobjects/ServiceProviderEvent__e'.
+    MinLength: 58
+    AllowedPattern: ^https:\/\/[a-z]([a-z0-9-\.]*[a-z])*/services/data/v\d+\.\d/sobjects/ServiceProviderEvent(__e)?$
     ConstraintDescription: >-
-      Can only include lowercase letters, numbers, and hyphens.
-  IsEnhancedSalesforceSandbox:
-    Type: String
-    Description: >-
-      Choose yes if using a Salesforce sandbox with an enhanced domain.
-    AllowedValues:
-      - 'yes'
-      - 'no'
-    Default: 'no'
-  SalesforcePlatformEventEndpointVersion:
-    Type: String
-    Description: Salesforce platform event endpoint version to use.
-    MinLength: 1
-    Default: v55.0
-  IsCustomSalesforcePlatformEventEndpoint:
-    Type: String
-    Description: >-
-      Choose yes if using a Salesforce custom platform event endpoint for
-      testing purposes.
-    AllowedValues:
-      - 'yes'
-      - 'no'
-    Default: 'no'
+      Must be a valid Salesforce platform event endpoint URL.
   SalesforcePlatformEventEndpointRateLimit:
     Type: Number
     Description: >-
@@ -303,9 +270,6 @@ Parameters:
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
 Conditions:
-  IsEnhancedSalesforceSandbox: !And [!Not [!Equals [!Ref SalesforceSandboxName, '']], !Equals [!Ref IsEnhancedSalesforceSandbox, 'true']]
-  IsCustomSalesforcePlatformEventEndpoint: !Equals [!Ref IsCustomSalesforcePlatformEventEndpoint, 'true']
-  IsSandbox: !Not [!Equals [!Ref SalesforceSandboxName, '']]
   CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
   IamGroup:
@@ -378,10 +342,7 @@ Resources:
       AuthorizationType: OAUTH_CLIENT_CREDENTIALS
       AuthParameters:
         OAuthParameters:
-          AuthorizationEndpoint: !Sub
-            - https://${SalesforceInstanceName}${SandboxSuffix}${EnhancedSandboxDomain}.my.salesforce.com/services/oauth2/token
-            - SandboxSuffix: !If [IsSandbox, !Sub '--${SalesforceSandboxName}', '']
-              EnhancedSandboxDomain: !If [IsEnhancedSalesforceSandbox, '.sandbox', '']
+          AuthorizationEndpoint: !Ref SalesforceAuthorizationEndpoint
           ClientParameters:
             ClientID: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientID}}'
             ClientSecret: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientSecret}}'
@@ -405,9 +366,7 @@ Resources:
       Description: >-
         API destination to send events to Salesforce platform event endpoint.
       HttpMethod: POST
-      InvocationEndpoint: !Sub
-        - https://${SalesforceInstanceName}.my.salesforce.com/services/data/${SalesforcePlatformEventEndpointVersion}/sobjects/ServiceProviderEvent${Suffix}
-        - Suffix: !If [IsCustomSalesforcePlatformEventEndpoint, __e, '']
+      InvocationEndpoint: !Ref SalesforcePlatformEventEndpoint
       InvocationRateLimitPerSecond: !Ref SalesforcePlatformEventEndpointRateLimit
   SalesforceEventRule:
     Type: AWS::Events::Rule
@@ -499,3 +458,7 @@ Resources:
       AlarmActions:
         - !Ref AlarmTopic
       TreatMissingData: ignore
+Outputs:
+  Postdeployment:
+    Description: See the deployment guide for post-deployment steps.
+    Value: https://aws-quickstart.github.io/quickstart-salesforce-health-cloud-virtual-care/#_postdeployment_steps
