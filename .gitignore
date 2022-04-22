@@ -8,6 +8,8 @@ packages/
 
 # Docs
 docs/
+index.html
+prod_example.html
 
 # macOS
 .DS_Store
