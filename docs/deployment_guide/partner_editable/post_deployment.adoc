@@ -1,3 +1,5 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+
+* A Salesforce Named Credential is required to be configured for Salesforce Health Cloud to be able to invoke AWS services.  The AWS Quick Start generated User's Access Key and Secret can be retrieved using AWS IAM as described in the following - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
