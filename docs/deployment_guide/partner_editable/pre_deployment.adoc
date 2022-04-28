@@ -7,5 +7,3 @@
 * To create an AWS Account using AWS Organiation refer to the following instructions - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new
 
 * A Salesforce Connected App is required prior to running the AWS Quickstart to integrate events generated in AWS and sent via Amazon EventBridge to Salesforce Platform Events. - https://help.salesforce.com/s/articleView?id=connected_app_create_api_integration.htm&type=5&language=en_US
-
-* A Salesforce Named Credential is required to be configured for Salesforce Health Cloud to be able to invoke AWS services.  The AWS Quick Start generated User's Access Key and Secret can be retrieved using AWS IAM - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
