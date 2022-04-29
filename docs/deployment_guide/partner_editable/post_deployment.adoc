@@ -2,5 +2,6 @@
 
 == Postdeployment steps
 
-* A {partner-company-short-name} named credential is required to be configured for {partner-product-name} to be able to invoke AWS services.
-  The AWS Quick Start generated user's access key and secret can be retrieved using AWS IAM as described in the following: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+* {partner-product-name} requires a {partner-company-short-name} named credential to be configured for invoking AWS services.
+** The {partner-company-short-name} named credential will store an AWS IAM access key and secret that will be used for authenticating requests to AWS service endpoints.
+** The required access key and secret are intentionally not created as part of this AWS Quick Start, so you must create these separately for the AWS IAM user account that is deployed as part of the Quick Start using the following instructions: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
