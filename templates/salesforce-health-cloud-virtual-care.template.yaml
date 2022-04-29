@@ -47,10 +47,10 @@ Metadata:
           - DlqCmkAlias
           - DlqKmsDataKeyReusePeriod
           - DlqMessageRetentionPeriod
-          - DlqAlarmEmail
           - DlqQueueDepthAlarmPeriod
           - DlqQueueDepthAlarmEvaluationPeriods
           - DlqQueueDepthAlarmThreshold
+          - DlqAlarmEmail
     ParameterLabels:
       SalesforceUsername:
         default: Username
