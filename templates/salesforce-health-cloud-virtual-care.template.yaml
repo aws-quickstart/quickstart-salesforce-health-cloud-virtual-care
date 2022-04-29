@@ -30,6 +30,12 @@ Metadata:
           - SalesforcePlatformEventEndpoint
           - SalesforcePlatformEventEndpointRateLimit
       - Label:
+          default: Service account
+        Parameters:
+          - IamUserName
+          - IamPassword
+          - IamGroupName
+      - Label:
           default: Event processing retry configuration
         Parameters:
           - MaximumRetryAttempts
@@ -45,12 +51,6 @@ Metadata:
           - DlqQueueDepthAlarmPeriod
           - DlqQueueDepthAlarmEvaluationPeriods
           - DlqQueueDepthAlarmThreshold
-      - Label:
-          default: Service account
-        Parameters:
-          - IamUserName
-          - IamPassword
-          - IamGroupName
     ParameterLabels:
       SalesforceUsername:
         default: Username
