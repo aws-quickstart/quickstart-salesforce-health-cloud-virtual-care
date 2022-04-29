@@ -5,9 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.17">
-<meta name="description" content="Salesforce Health Cloud Virtual Care Deployment Guide on AWS">
-<meta name="keywords" content="Quick Start, AWS, Salesforce Health Cloud Virtual Care">
-<title>Salesforce Health Cloud Virtual Care on the AWS Cloud</title>
+<meta name="description" content="Salesforce Health Cloud: Virtual Care Deployment Guide on AWS">
+<meta name="keywords" content="Quick Start, AWS, Salesforce Health Cloud: Virtual Care">
+<title>Salesforce Health Cloud: Virtual Care on the AWS Cloud</title>
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
 /* Uncomment @import statement to use as custom stylesheet */
@@ -850,7 +850,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_salesforce_health_cloud_virtual_care_on_the_aws_cloud" class="discrete text-center">Salesforce Health Cloud Virtual Care on the AWS Cloud</h2>
+<h2 id="_salesforce_health_cloud_virtual_care_on_the_aws_cloud" class="discrete text-center">Salesforce Health Cloud: Virtual Care on the AWS Cloud</h2>
 <h2 id="_quick_start_deployment_guide" class="discrete text-left text-center">Quick Start Deployment Guide</h2>
 <div class="imageblock text-center">
 <div class="content">
@@ -865,7 +865,7 @@ p.footer-text a{color:#d7d8d8}
 <div class="paragraph text-center">
 <p><strong>May 2022</strong><br>
 <em>Harsha Talkad and Vandana Sreenivasa Rao, Salesforce, Inc</em><br>
-<em>Chris Riley, AWS BDSI SACS Architecture team</em><br>
+<em>Chris Riley, AWS Strategic Accounts team</em><br>
 <em>Troy Lindsay and Dylan Owen, AWS Integration &amp; Automation team</em><br></p>
 </div>
 <div class="admonitionblock tip text-left">
@@ -889,7 +889,7 @@ Refer to the <a href="https://github.com/aws-quickstart/quickstart-salesforce-he
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start deploys Salesforce Health Cloud Virtual Care on the AWS Cloud. If you are unfamiliar with AWS Quick Starts, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Quick Start General Information Guide</a>.</p>
+<p>This Quick Start deploys Salesforce Health Cloud: Virtual Care on the AWS Cloud. If you are unfamiliar with AWS Quick Starts, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Quick Start General Information Guide</a>.</p>
 </div>
 </div>
 </div>
@@ -962,16 +962,23 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A new AWS Account is required to install Virtual Care. This can be done as a new standalone AWS Account or as an account in an existing AWS Organization.</p>
+<p>A new AWS account is required to install Salesforce Health Cloud: Virtual Care.
+This can be done as a new standalone AWS account or as a new account in an existing AWS Organization.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>To create a new standalone AWS account, refer to the following instructions: <a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/" class="bare">https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/</a>.</p>
 </li>
 <li>
-<p>To create a new standalone AWS Account refer to the following instructions - <a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/" class="bare">https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/</a></p>
+<p>To create a new AWS account using an AWS Organiation, refer to the following instructions: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new" class="bare">https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new</a>.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p>To create an AWS Account using AWS Organiation refer to the following instructions - <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new" class="bare">https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new</a></p>
-</li>
-<li>
-<p>A Salesforce Connected App is required prior to running the AWS Quickstart to integrate events generated in AWS and sent via Amazon EventBridge to Salesforce Platform Events. Please refer to your Salesforce Virtual Care - Video Call Setup Instructions provided as part of the Pilot.</p>
+<p>A Salesforce connected app must be configured prior to deploying the AWS Quickstart.
+This integrates the events generated in AWS that are sent via Amazon EventBridge to Salesforce platform events.
+Please refer to your Salesforce Health Cloud: Virtual Care setup instructions provided as part of the pilot.</p>
 </li>
 </ul>
 </div>
@@ -1016,7 +1023,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
 </li>
 <li>
-<p>Monitor the stack&#8217;s status, and when the status is <strong>CREATE_COMPLETE</strong>, the Salesforce Health Cloud Virtual Care deployment is ready.</p>
+<p>Monitor the stack&#8217;s status, and when the status is <strong>CREATE_COMPLETE</strong>, the Salesforce Health Cloud: Virtual Care deployment is ready.</p>
 </li>
 <li>
 <p>To view the created resources, choose the <strong>Outputs</strong> tab.</p>
@@ -1031,7 +1038,17 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <div class="ulist">
 <ul>
 <li>
-<p>A Salesforce Named Credential is required to be configured for Salesforce Health Cloud to be able to invoke AWS services.  The AWS Quick Start generated User&#8217;s Access Key and Secret can be retrieved using AWS IAM as described in the following - <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" class="bare">https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html</a></p>
+<p>Salesforce Health Cloud: Virtual Care requires a Salesforce named credential to be configured for invoking AWS services.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The Salesforce named credential will store an AWS IAM access key and secret that will be used for authenticating requests to AWS service endpoints.</p>
+</li>
+<li>
+<p>The required access key and secret are intentionally not created as part of this AWS Quick Start, so you must create these separately for the AWS IAM user account that is deployed as part of the Quick Start using the following instructions: <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" class="bare">https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html</a></p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
