@@ -250,6 +250,7 @@ Parameters:
     AllowedPattern: ^[\w+=,.@-]+$
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
+    Default: salesforce
   IamPassword:
     Type: String
     Description: >-
@@ -269,6 +270,7 @@ Parameters:
     AllowedPattern: ^[\w+=,.@-]+$
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
+    Default: salesforce
 Conditions:
   CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
