@@ -30,6 +30,12 @@ Metadata:
           - SalesforcePlatformEventEndpoint
           - SalesforcePlatformEventEndpointRateLimit
       - Label:
+          default: Service account
+        Parameters:
+          - IamUserName
+          - IamPassword
+          - IamGroupName
+      - Label:
           default: Event processing retry configuration
         Parameters:
           - MaximumRetryAttempts
@@ -41,16 +47,10 @@ Metadata:
           - DlqCmkAlias
           - DlqKmsDataKeyReusePeriod
           - DlqMessageRetentionPeriod
-          - DlqAlarmEmail
           - DlqQueueDepthAlarmPeriod
           - DlqQueueDepthAlarmEvaluationPeriods
           - DlqQueueDepthAlarmThreshold
-      - Label:
-          default: Service account
-        Parameters:
-          - IamUserName
-          - IamPassword
-          - IamGroupName
+          - DlqAlarmEmail
     ParameterLabels:
       SalesforceUsername:
         default: Username
@@ -136,7 +136,7 @@ Parameters:
     Description: >-
       Salesforce platform event endpoint URL. Example 1:
       'https://<InstanceName>.my.salesforce.com/services/data/v55.0/sobjects/ServiceProviderEvent'.
-      Example 2 (custom platform event for testing):
+      Example 2 (custom platform event endpoint for testing):
       'https://<InstanceName>.my.salesforce.com/services/data/v55.0/sobjects/ServiceProviderEvent__e'.
     MinLength: 58
     AllowedPattern: ^https:\/\/[a-z]([a-z0-9-\.]*[a-z])*/services/data/v\d+\.\d/sobjects/ServiceProviderEvent(__e)?$
@@ -250,6 +250,7 @@ Parameters:
     AllowedPattern: ^[\w+=,.@-]+$
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
+    Default: salesforce
   IamPassword:
     Type: String
     Description: >-
@@ -269,6 +270,7 @@ Parameters:
     AllowedPattern: ^[\w+=,.@-]+$
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
+    Default: salesforce
 Conditions:
   CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
