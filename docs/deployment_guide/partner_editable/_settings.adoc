@@ -1,6 +1,7 @@
 :quickstart-project-name: quickstart-salesforce-health-cloud-virtual-care
 :quickstart-github-org: aws-quickstart
-:partner-product-name: Salesforce Health Cloud Virtual Care
+:partner-company-short-name: Salesforce
+:partner-product-name: {partner-company-short-name} Health Cloud Virtual Care
 :partner-product-short-name: Virtual Care
 :partner-company-name: Salesforce, Inc
 :doc-month: May

@@ -6,5 +6,6 @@
   This can be done as a new standalone AWS account or as a new account in an existing AWS Organization.
 ** To create a new standalone AWS account, refer to the following instructions: https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/.
 ** To create a new AWS account using an AWS Organiation, refer to the following instructions: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new.
-* A Connected App is required prior to running the AWS Quickstart to integrate events generated in AWS and sent via Amazon EventBridge to Salesforce Platform Events.
+* A {partner-company-short-name} connected app must be configured prior to deploying the AWS Quickstart.
+  This integrates the events generated in AWS that are sent via Amazon EventBridge to {partner-company-short-name} platform events.
   Please refer to your {partner-product-name} setup instructions provided as part of the pilot.
