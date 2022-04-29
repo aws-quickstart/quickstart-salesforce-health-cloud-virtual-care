@@ -2,8 +2,9 @@
 
 == Predeployment steps
 
-* A new AWS Account is required to install Virtual Care. This can be done as a new standalone AWS Account or as an account in an existing AWS Organization.
-* To create a new standalone AWS Account refer to the following instructions - https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/
-* To create an AWS Account using AWS Organiation refer to the following instructions - https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new
-
-* A Salesforce Connected App is required prior to running the AWS Quickstart to integrate events generated in AWS and sent via Amazon EventBridge to Salesforce Platform Events. Please refer to your Salesforce Virtual Care - Video Call Setup Instructions provided as part of the Pilot. 
+* A new AWS account is required to install {partner-product-name}.
+  This can be done as a new standalone AWS account or as a new account in an existing AWS Organization.
+** To create a new standalone AWS account, refer to the following instructions: https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/.
+** To create a new AWS account using an AWS Organiation, refer to the following instructions: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new.
+* A Connected App is required prior to running the AWS Quickstart to integrate events generated in AWS and sent via Amazon EventBridge to Salesforce Platform Events.
+  Please refer to your {partner-product-name} setup instructions provided as part of the pilot.
