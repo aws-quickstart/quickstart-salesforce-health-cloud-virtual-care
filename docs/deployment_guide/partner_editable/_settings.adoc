@@ -10,6 +10,6 @@
 // :other-contributors: Akua Mansa, Trek10
 :aws-contributors: Chris Riley, AWS Strategic Accounts team
 :aws-ia-contributors: Troy Lindsay and Dylan Owen, AWS Integration & Automation team
-:deployment_time: 15 minutes
+:deployment_time: 5 minutes
 :default_deployment_region: us-east-1
 // :private_repo:
