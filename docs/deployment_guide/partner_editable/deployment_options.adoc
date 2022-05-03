@@ -2,6 +2,7 @@
 
 This Quick Start provides the following deployment option:
 
-* http://qs_launch_permalink[Deploy {partner-product-short-name} into a new AWS Account^]. This option provisions {partner-product-short-name} resources into your new AWS account. 
+* https://raw.githubusercontent.com/aws-quickstart/quickstart-salesforce-health-cloud-virtual-care/main/templates/salesforce-health-cloud-virtual-care.template.yaml[Deploy {partner-product-short-name} into a new AWS Account^].
+  This option provisions {partner-product-short-name} resources into your new AWS account.
 
 This Quick Start lets you configure {partner-product-short-name} settings.
