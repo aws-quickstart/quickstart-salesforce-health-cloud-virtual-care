@@ -840,7 +840,11 @@ p.footer-text a{color:#d7d8d8}
 <li><a href="#_deployment_options">Deployment options</a></li>
 <li><a href="#_predeployment_steps">Predeployment steps</a></li>
 <li><a href="#_deployment_steps">Deployment steps</a></li>
-<li><a href="#_postdeployment_steps">Postdeployment steps</a></li>
+<li><a href="#_postdeployment_steps">Postdeployment steps</a>
+<ul class="sectlevel2">
+<li><a href="#_create_an_iam_access_key">Create an IAM access key</a></li>
+</ul>
+</li>
 <li><a href="#_troubleshooting">Troubleshooting</a></li>
 <li><a href="#_feedback">Feedback</a></li>
 <li><a href="#_notices">Notices</a></li>
@@ -947,7 +951,8 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy Virtual Care into a new AWS Account</a>. This option provisions Virtual Care resources into your new AWS account.</p>
+<p><a href="https://raw.githubusercontent.com/aws-quickstart/quickstart-salesforce-health-cloud-virtual-care/main/templates/salesforce-health-cloud-virtual-care.template.yaml" target="_blank" rel="noopener">Deploy Virtual Care into a new AWS Account</a>.
+This option provisions Virtual Care resources into your new AWS account.</p>
 </li>
 </ul>
 </div>
@@ -970,7 +975,7 @@ This can be done as a new standalone AWS account or as a new account in an exist
 <p>To create a new standalone AWS account, refer to the following instructions: <a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/" class="bare">https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/</a>.</p>
 </li>
 <li>
-<p>To create a new AWS account using an AWS Organiation, refer to the following instructions: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new" class="bare">https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new</a>.</p>
+<p>To create a new AWS account using an AWS Organization, refer to the following instructions: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new" class="bare">https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new</a>.</p>
 </li>
 </ul>
 </div>
@@ -990,7 +995,7 @@ Please refer to your Salesforce Health Cloud: Virtual Care setup instructions pr
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign in to your AWS account, and launch this Quick Start, as described under <a href="#_deployment_options">Deployment options</a>. The AWS CloudFormation console opens with a prepopulated template. Deployment takes about 15 minutes to complete.</p>
+<p>Sign in to your AWS account, and launch this Quick Start, as described under <a href="#_deployment_options">Deployment options</a>. The AWS CloudFormation console opens with a prepopulated template. Deployment takes about 5 minutes to complete.</p>
 </li>
 <li>
 <p>Choose the correct AWS Region, and then choose <strong>Next</strong>.</p>
@@ -1045,12 +1050,16 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>The Salesforce named credential will store an AWS IAM access key and secret that will be used for authenticating requests to AWS service endpoints.</p>
 </li>
 <li>
-<p>The required access key and secret are intentionally not created as part of this AWS Quick Start, so you must create these separately for the AWS IAM user account that is deployed as part of the Quick Start using the following instructions: <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" class="bare">https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html</a></p>
+<p>The required access key and secret are intentionally not created for the new AWS IAM user service account for security reasons.</p>
 </li>
 </ul>
 </div>
 </li>
 </ul>
+</div>
+<div class="sect2">
+<h3 id="_create_an_iam_access_key">Create an IAM access key</h3>
+
 </div>
 </div>
 </div>
