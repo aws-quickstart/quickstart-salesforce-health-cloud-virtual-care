@@ -134,10 +134,8 @@ Parameters:
   SalesforcePlatformEventEndpoint:
     Type: String
     Description: >-
-      Salesforce platform event endpoint URL. Example 1:
+      Salesforce platform event endpoint URL. Example:
       'https://<InstanceName>.my.salesforce.com/services/data/v55.0/sobjects/ServiceProviderEvent'.
-      Example 2 (custom platform event endpoint for testing):
-      'https://<InstanceName>.my.salesforce.com/services/data/v55.0/sobjects/ServiceProviderEvent__e'.
     MinLength: 58
     AllowedPattern: ^https:\/\/[a-z]([a-z0-9-\.]*[a-z])*/services/data/v\d+\.\d/sobjects/ServiceProviderEvent(__e)?$
     ConstraintDescription: >-
