@@ -283,9 +283,6 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       UserName: !Ref IamUserName
-      LoginProfile:
-        Password: !Ref IamPassword
-        PasswordResetRequired: False
       Path: /salesforce/
       Groups:
         - !Ref IamGroup
