@@ -261,7 +261,7 @@ Parameters:
     Type: String
     Description: >-
       Name for the AWS IAM group that grants the AWS IAM user account the
-      necessary permissions via the associated AWS managed AmazonChimeSDK
+      necessary permissions via the associated managed VirtualCareUserPolicy
       IAM policy.
     MinLength: 1
     MaxLength: 128
@@ -272,20 +272,143 @@ Parameters:
 Conditions:
   CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
+  IamPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Groups:
+      - !Ref IamGroup
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'chime:CreateMeeting'
+              - 'chime:CreateMeetingWithAttendees'
+              - 'chime:DeleteMeeting'
+              - 'chime:GetMeeting'
+              - 'chime:ListMeetings'
+              - 'chime:CreateAttendee'
+              - 'chime:BatchCreateAttendee'
+              - 'chime:DeleteAttendee'
+              - 'chime:GetAttendee'
+              - 'chime:ListAttendees'
+              - 'chime:ListAttendeeTags'
+              - 'chime:ListMeetingTags'
+              - 'chime:ListTagsForResource'
+              - 'chime:TagAttendee'
+              - 'chime:TagMeeting'
+              - 'chime:TagResource'
+              - 'chime:UntagAttendee'
+              - 'chime:UntagMeeting'
+              - 'chime:UntagResource'
+              - 'chime:StartMeetingTranscription'
+              - 'chime:StopMeetingTranscription'
+              - 'chime:CreateAppInstanceAdmin'
+              - 'chime:ListChannelsModeratedByAppInstanceUser'
+              - 'chime:DescribeChannelMembership'
+              - 'chime:ListChannelModerators'
+              - 'chime:DescribeChannel'
+              - 'chime:ListChannelMessages'
+              - 'chime:ListAppInstanceAdmins'
+              - 'chime:ListChannels'
+              - 'chime:UpdateAppInstanceUser'
+              - 'chime:GetMessagingSessionEndpoint'
+              - 'chime:DescribeAppInstance'
+              - 'chime:DeleteChannel'
+              - 'chime:GetChannelMessage'
+              - 'chime:CreateChannelMembership'
+              - 'chime:Connect'
+              - 'chime:CreateChannel'
+              - 'chime:PutAppInstanceRetentionSettings'
+              - 'chime:ListChannelMembershipsForAppInstanceUser'
+              - 'chime:CreateChannelModerator'
+              - 'chime:ListChannelMemberships'
+              - 'chime:CreateAppInstance'
+              - 'chime:SendChannelMessage'
+              - 'chime:DescribeAppInstanceAdmin'
+              - 'chime:GetAppInstanceRetentionSettings'
+              - 'chime:DeleteAppInstanceAdmin'
+              - 'chime:GetRetentionSettings'
+              - 'chime:ListAppInstanceUsers'
+              - 'chime:ListAppInstanceUserEndpoints'
+              - 'chime:ListAppInstances'
+              - 'chime:DescribeAppInstanceUser'
+              - 'chime:DeleteAppInstanceUser'
+              - 'chime:DeleteChannelMembership'
+              - 'chime:CreateAppInstanceUser'
+              - 'chime:DeleteAppInstance'
+            Resource: '*'
+      PolicyName: VirtualCareUserPolicy
   IamGroup:
     Type: AWS::IAM::Group
     Properties:
       GroupName: !Ref IamGroupName
       Path: /salesforce/
-      ManagedPolicyArns:
-        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonChimeSDK
   IamUser:
     Type: AWS::IAM::User
     Properties:
       UserName: !Ref IamUserName
+      LoginProfile:
+        Password: !Ref IamPassword
+        PasswordResetRequired: False
       Path: /salesforce/
       Groups:
         - !Ref IamGroup
+  ChimeSDKMessagingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: VirtualCareRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:user/salesforce/${IamUserName}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: VirtualCareRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'sts:AssumeRole'
+                  - 'chime:CreateAppInstanceAdmin'
+                  - 'chime:ListChannelsModeratedByAppInstanceUser'
+                  - 'chime:DescribeChannelMembership'
+                  - 'chime:ListChannelModerators'
+                  - 'chime:DescribeChannel'
+                  - 'chime:ListChannelMessages'
+                  - 'chime:ListAppInstanceAdmins'
+                  - 'chime:ListChannels'
+                  - 'chime:UpdateAppInstanceUser'
+                  - 'chime:GetMessagingSessionEndpoint'
+                  - 'chime:DescribeAppInstance'
+                  - 'chime:DeleteChannel'
+                  - 'chime:GetChannelMessage'
+                  - 'chime:CreateChannelMembership'
+                  - 'chime:Connect'
+                  - 'chime:CreateChannel'
+                  - 'chime:PutAppInstanceRetentionSettings'
+                  - 'chime:ListChannelMembershipsForAppInstanceUser'
+                  - 'chime:CreateChannelModerator'
+                  - 'chime:ListChannelMemberships'
+                  - 'chime:CreateAppInstance'
+                  - 'chime:SendChannelMessage'
+                  - 'chime:DescribeAppInstanceAdmin'
+                  - 'chime:GetAppInstanceRetentionSettings'
+                  - 'chime:DeleteAppInstanceAdmin'
+                  - 'chime:GetRetentionSettings'
+                  - 'chime:ListAppInstanceUsers'
+                  - 'chime:ListAppInstanceUserEndpoints'
+                  - 'chime:ListAppInstances'
+                  - 'chime:DescribeAppInstanceUser'
+                  - 'chime:DeleteAppInstanceUser'
+                  - 'chime:DeleteChannelMembership'
+                  - 'chime:CreateAppInstanceUser'
+                  - 'chime:DeleteAppInstance'
+                Resource: '*'
+    DependsOn: IamUser
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
