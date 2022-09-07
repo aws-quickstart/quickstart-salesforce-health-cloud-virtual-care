@@ -11,4 +11,3 @@
   * Select Security Credentials. 
   * Under the Access Key section, select Create access key. This will create a key and allow for copying or downloading the contents.
   * Provide the Access key id and secret access key to the Salesforce Administrator for configuration of a Named Credential. 
-

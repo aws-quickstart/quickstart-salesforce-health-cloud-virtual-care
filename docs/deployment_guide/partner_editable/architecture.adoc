@@ -7,12 +7,12 @@ AWS Cloud.
 
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} on AWS
-image::../images/architecture_diagram.png[Architecture]
+image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
 
 As shown in <<architecture1>>, this Quick Start sets up the following:
 
-* An Amazon EventBridge Rule that filters aws.chime events and a pre-defined Input Transformer to create a Salesforce Platform event.
-* An Amazon EventBridge API Destination with a pre-defined Connection and Secret using Salesforce Connected App details.
-* An Amazon SQS queue acting as a Dead Letter Queue for failed event delivery using AWS KMS to encrypt messages.
-* An Amazon Cloudwatch Alarm that is monitoring the Amazon SQS Queue depth. 
-* An Amazon SNS Topic to receive alarm events and support notification to interested parties. 
+* An Amazon EventBridge rule that filters aws.chime events and a pre-defined Input Transformer to create a {partner-company-short-name} platform event.
+* An Amazon EventBridge API destination with a pre-defined connection and secret using {partner-company-short-name} connected app details.
+* An Amazon SQS queue acting as a dead-letter queue for failed event delivery using AWS KMS to encrypt messages.
+* An Amazon Cloudwatch alarm that monitors the Amazon SQS queue depth.
+* An Amazon SNS topic to receive alarm events and send email notifications to interested parties.
