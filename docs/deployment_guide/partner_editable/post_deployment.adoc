@@ -2,8 +2,14 @@
 
 == Postdeployment steps
 
-* {partner-product-name} requires a {partner-company-short-name} named credential to be configured for invoking AWS services.
-** The {partner-company-short-name} named credential will store an AWS IAM access key and secret that will be used for authenticating requests to AWS service endpoints.
-** The required access key and secret are intentionally not created for the new AWS IAM user service account for security reasons.
+A https://help.salesforce.com/s/articleView?id=sf.named_credentials_define.htm&type=5[{partner-company-short-name} named credential] is required to be configured for {partner-product-short-name} to be able to invoke AWS services.
+The AWS Quick Start generated user's access key and secret can be retrieved using AWS IAM as described in the following steps:
 
-=== Create an IAM access key
+* Login to your AWS account that has sufficient privileges for creating an access key for the service account (https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateAccessKey.html[reference]).
+* Within the AWS Console, select Services / Identity Access Management (IAM).
+* Within IAM, select *Users*.
+* Select the user specified in the AWS CloudFormation template definition.
+* Select the *Security Credentials* tab.
+* Under the *Access Key* section, select Create access key.
+  This will create a key and allow for copying or downloading the contents.
+* The access key ID and secret access key will be used to configure a {partner-company-short-name} named credential.
