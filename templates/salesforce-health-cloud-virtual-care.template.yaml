@@ -282,61 +282,61 @@ Resources:
         Statement:
           - Effect: Allow
             Action:
-              - 'chime:CreateMeeting'
-              - 'chime:CreateMeetingWithAttendees'
-              - 'chime:DeleteMeeting'
-              - 'chime:GetMeeting'
-              - 'chime:ListMeetings'
-              - 'chime:CreateAttendee'
-              - 'chime:BatchCreateAttendee'
-              - 'chime:DeleteAttendee'
-              - 'chime:GetAttendee'
-              - 'chime:ListAttendees'
-              - 'chime:ListAttendeeTags'
-              - 'chime:ListMeetingTags'
-              - 'chime:ListTagsForResource'
-              - 'chime:TagAttendee'
-              - 'chime:TagMeeting'
-              - 'chime:TagResource'
-              - 'chime:UntagAttendee'
-              - 'chime:UntagMeeting'
-              - 'chime:UntagResource'
-              - 'chime:StartMeetingTranscription'
-              - 'chime:StopMeetingTranscription'
-              - 'chime:CreateAppInstanceAdmin'
-              - 'chime:ListChannelsModeratedByAppInstanceUser'
-              - 'chime:DescribeChannelMembership'
-              - 'chime:ListChannelModerators'
-              - 'chime:DescribeChannel'
-              - 'chime:ListChannelMessages'
-              - 'chime:ListAppInstanceAdmins'
-              - 'chime:ListChannels'
-              - 'chime:UpdateAppInstanceUser'
-              - 'chime:GetMessagingSessionEndpoint'
-              - 'chime:DescribeAppInstance'
-              - 'chime:DeleteChannel'
-              - 'chime:GetChannelMessage'
-              - 'chime:CreateChannelMembership'
-              - 'chime:Connect'
-              - 'chime:CreateChannel'
-              - 'chime:PutAppInstanceRetentionSettings'
-              - 'chime:ListChannelMembershipsForAppInstanceUser'
-              - 'chime:CreateChannelModerator'
-              - 'chime:ListChannelMemberships'
-              - 'chime:CreateAppInstance'
-              - 'chime:SendChannelMessage'
-              - 'chime:DescribeAppInstanceAdmin'
-              - 'chime:GetAppInstanceRetentionSettings'
-              - 'chime:DeleteAppInstanceAdmin'
-              - 'chime:GetRetentionSettings'
-              - 'chime:ListAppInstanceUsers'
-              - 'chime:ListAppInstanceUserEndpoints'
-              - 'chime:ListAppInstances'
-              - 'chime:DescribeAppInstanceUser'
-              - 'chime:DeleteAppInstanceUser'
-              - 'chime:DeleteChannelMembership'
-              - 'chime:CreateAppInstanceUser'
-              - 'chime:DeleteAppInstance'
+              - chime:CreateMeeting
+              - chime:CreateMeetingWithAttendees
+              - chime:DeleteMeeting
+              - chime:GetMeeting
+              - chime:ListMeetings
+              - chime:CreateAttendee
+              - chime:BatchCreateAttendee
+              - chime:DeleteAttendee
+              - chime:GetAttendee
+              - chime:ListAttendees
+              - chime:ListAttendeeTags
+              - chime:ListMeetingTags
+              - chime:ListTagsForResource
+              - chime:TagAttendee
+              - chime:TagMeeting
+              - chime:TagResource
+              - chime:UntagAttendee
+              - chime:UntagMeeting
+              - chime:UntagResource
+              - chime:StartMeetingTranscription
+              - chime:StopMeetingTranscription
+              - chime:CreateAppInstanceAdmin
+              - chime:ListChannelsModeratedByAppInstanceUser
+              - chime:DescribeChannelMembership
+              - chime:ListChannelModerators
+              - chime:DescribeChannel
+              - chime:ListChannelMessages
+              - chime:ListAppInstanceAdmins
+              - chime:ListChannels
+              - chime:UpdateAppInstanceUser
+              - chime:GetMessagingSessionEndpoint
+              - chime:DescribeAppInstance
+              - chime:DeleteChannel
+              - chime:GetChannelMessage
+              - chime:CreateChannelMembership
+              - chime:Connect
+              - chime:CreateChannel
+              - chime:PutAppInstanceRetentionSettings
+              - chime:ListChannelMembershipsForAppInstanceUser
+              - chime:CreateChannelModerator
+              - chime:ListChannelMemberships
+              - chime:CreateAppInstance
+              - chime:SendChannelMessage
+              - chime:DescribeAppInstanceAdmin
+              - chime:GetAppInstanceRetentionSettings
+              - chime:DeleteAppInstanceAdmin
+              - chime:GetRetentionSettings
+              - chime:ListAppInstanceUsers
+              - chime:ListAppInstanceUserEndpoints
+              - chime:ListAppInstances
+              - chime:DescribeAppInstanceUser
+              - chime:DeleteAppInstanceUser
+              - chime:DeleteChannelMembership
+              - chime:CreateAppInstanceUser
+              - chime:DeleteAppInstance
             Resource: '*'
       PolicyName: VirtualCareUserPolicy
   IamGroup:
@@ -363,7 +363,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: !Sub arn:aws:iam::${AWS::AccountId}:user/salesforce/${IamUserName}
+              AWS: !GetAtt IamUser.Arn
             Action: sts:AssumeRole
       Policies:
         - PolicyName: VirtualCareRolePolicy
@@ -372,43 +372,42 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - 'sts:AssumeRole'
-                  - 'chime:CreateAppInstanceAdmin'
-                  - 'chime:ListChannelsModeratedByAppInstanceUser'
-                  - 'chime:DescribeChannelMembership'
-                  - 'chime:ListChannelModerators'
-                  - 'chime:DescribeChannel'
-                  - 'chime:ListChannelMessages'
-                  - 'chime:ListAppInstanceAdmins'
-                  - 'chime:ListChannels'
-                  - 'chime:UpdateAppInstanceUser'
-                  - 'chime:GetMessagingSessionEndpoint'
-                  - 'chime:DescribeAppInstance'
-                  - 'chime:DeleteChannel'
-                  - 'chime:GetChannelMessage'
-                  - 'chime:CreateChannelMembership'
-                  - 'chime:Connect'
-                  - 'chime:CreateChannel'
-                  - 'chime:PutAppInstanceRetentionSettings'
-                  - 'chime:ListChannelMembershipsForAppInstanceUser'
-                  - 'chime:CreateChannelModerator'
-                  - 'chime:ListChannelMemberships'
-                  - 'chime:CreateAppInstance'
-                  - 'chime:SendChannelMessage'
-                  - 'chime:DescribeAppInstanceAdmin'
-                  - 'chime:GetAppInstanceRetentionSettings'
-                  - 'chime:DeleteAppInstanceAdmin'
-                  - 'chime:GetRetentionSettings'
-                  - 'chime:ListAppInstanceUsers'
-                  - 'chime:ListAppInstanceUserEndpoints'
-                  - 'chime:ListAppInstances'
-                  - 'chime:DescribeAppInstanceUser'
-                  - 'chime:DeleteAppInstanceUser'
-                  - 'chime:DeleteChannelMembership'
-                  - 'chime:CreateAppInstanceUser'
-                  - 'chime:DeleteAppInstance'
-                Resource: '*'
-    DependsOn: IamUser
+                  - sts:AssumeRole
+                  - chime:CreateAppInstanceAdmin
+                  - chime:ListChannelsModeratedByAppInstanceUser
+                  - chime:DescribeChannelMembership
+                  - chime:ListChannelModerators
+                  - chime:DescribeChannel
+                  - chime:ListChannelMessages
+                  - chime:ListAppInstanceAdmins
+                  - chime:ListChannels
+                  - chime:UpdateAppInstanceUser
+                  - chime:GetMessagingSessionEndpoint
+                  - chime:DescribeAppInstance
+                  - chime:DeleteChannel
+                  - chime:GetChannelMessage
+                  - chime:CreateChannelMembership
+                  - chime:Connect
+                  - chime:CreateChannel
+                  - chime:PutAppInstanceRetentionSettings
+                  - chime:ListChannelMembershipsForAppInstanceUser
+                  - chime:CreateChannelModerator
+                  - chime:ListChannelMemberships
+                  - chime:CreateAppInstance
+                  - chime:SendChannelMessage
+                  - chime:DescribeAppInstanceAdmin
+                  - chime:GetAppInstanceRetentionSettings
+                  - chime:DeleteAppInstanceAdmin
+                  - chime:GetRetentionSettings
+                  - chime:ListAppInstanceUsers
+                  - chime:ListAppInstanceUserEndpoints
+                  - chime:ListAppInstances
+                  - chime:DescribeAppInstanceUser
+                  - chime:DeleteAppInstanceUser
+                  - chime:DeleteChannelMembership
+                  - chime:CreateAppInstanceUser
+                  - chime:DeleteAppInstance
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
