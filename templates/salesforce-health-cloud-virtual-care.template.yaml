@@ -512,8 +512,8 @@ Resources:
         OAuthParameters:
           AuthorizationEndpoint: !Ref SalesforceAuthorizationEndpoint
           ClientParameters:
-            ClientID: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientID}}'
-            ClientSecret: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientSecret}}'
+            ClientID: !Ref SalesforceOAuthClientID
+            ClientSecret: !Ref SalesforceOAuthClientSecret
           HttpMethod: POST
           OAuthHttpParameters:
             BodyParameters:
@@ -522,11 +522,10 @@ Resources:
                 Value: password
               - IsValueSecret: false
                 Key: username
-                Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Username}}'
+                Value: !Ref SalesforceUsername
               - IsValueSecret: true
                 Key: password
-                Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Password}}'
-    DependsOn: SalesforceConnectionSecret
+                Value: !Ref SalesforcePassword
   SalesforceApiDestination:
     Type: AWS::Events::ApiDestination
     Properties:
