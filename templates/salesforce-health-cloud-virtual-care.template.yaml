@@ -272,78 +272,117 @@ Parameters:
 Conditions:
   CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
-  IamPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      Groups:
-      - !Ref IamGroup
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - chime:CreateMeeting
-              - chime:CreateMeetingWithAttendees
-              - chime:DeleteMeeting
-              - chime:GetMeeting
-              - chime:ListMeetings
-              - chime:CreateAttendee
-              - chime:BatchCreateAttendee
-              - chime:DeleteAttendee
-              - chime:GetAttendee
-              - chime:ListAttendees
-              - chime:ListAttendeeTags
-              - chime:ListMeetingTags
-              - chime:ListTagsForResource
-              - chime:TagAttendee
-              - chime:TagMeeting
-              - chime:TagResource
-              - chime:UntagAttendee
-              - chime:UntagMeeting
-              - chime:UntagResource
-              - chime:StartMeetingTranscription
-              - chime:StopMeetingTranscription
-              - chime:CreateAppInstanceAdmin
-              - chime:ListChannelsModeratedByAppInstanceUser
-              - chime:DescribeChannelMembership
-              - chime:ListChannelModerators
-              - chime:DescribeChannel
-              - chime:ListChannelMessages
-              - chime:ListAppInstanceAdmins
-              - chime:ListChannels
-              - chime:UpdateAppInstanceUser
-              - chime:GetMessagingSessionEndpoint
-              - chime:DescribeAppInstance
-              - chime:DeleteChannel
-              - chime:GetChannelMessage
-              - chime:CreateChannelMembership
-              - chime:Connect
-              - chime:CreateChannel
-              - chime:PutAppInstanceRetentionSettings
-              - chime:ListChannelMembershipsForAppInstanceUser
-              - chime:CreateChannelModerator
-              - chime:ListChannelMemberships
-              - chime:CreateAppInstance
-              - chime:SendChannelMessage
-              - chime:DescribeAppInstanceAdmin
-              - chime:GetAppInstanceRetentionSettings
-              - chime:DeleteAppInstanceAdmin
-              - chime:GetRetentionSettings
-              - chime:ListAppInstanceUsers
-              - chime:ListAppInstanceUserEndpoints
-              - chime:ListAppInstances
-              - chime:DescribeAppInstanceUser
-              - chime:DeleteAppInstanceUser
-              - chime:DeleteChannelMembership
-              - chime:CreateAppInstanceUser
-              - chime:DeleteAppInstance
-            Resource: '*'
-      PolicyName: VirtualCareUserPolicy
   IamGroup:
     Type: AWS::IAM::Group
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            EIAMPolicyWildcardResource: >-
+              StartMeetingTranscription and StopMeetingTranscription require a
+              wildcard resource, and cfn-lint v0.64.1 incorrectly alerts on this.
     Properties:
       GroupName: !Ref IamGroupName
       Path: /salesforce/
+      Policies:
+        - PolicyName: VirtualCareUserPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: AppInstanceActions
+                Effect: Allow
+                Action:
+                  - chime:DeleteAppInstance
+                  - chime:DescribeAppInstance
+                  - chime:GetAppInstanceRetentionSettings
+                  - chime:ListAppInstances
+                  - chime:PutAppInstanceRetentionSettings
+                  - chime:TagResource
+                  - chime:UntagResource
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+              - Sid: AppInstanceAdminActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstanceAdmin
+                  - chime:DeleteAppInstanceAdmin
+                  - chime:DescribeAppInstanceAdmin
+                  - chime:ListAppInstanceAdmins
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: AppInstanceUserActions
+                Effect: Allow
+                Action:
+                  - chime:Connect
+                  - chime:CreateChannel
+                  - chime:DeleteAppInstanceUser
+                  - chime:DescribeAppInstanceUser
+                  - chime:ListAppInstanceUsers
+                  - chime:ListAppInstanceUserEndpoints
+                  - chime:ListChannelMembershipsForAppInstanceUser
+                  - chime:ListChannels
+                  - chime:ListChannelsModeratedByAppInstanceUser
+                  - chime:UpdateAppInstanceUser
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: ChannelUserActions
+                Effect: Allow
+                Action:
+                  - chime:CreateChannelMembership
+                  - chime:CreateChannelModerator
+                  - chime:DeleteChannel
+                  - chime:DeleteChannelMembership
+                  - chime:DescribeChannel
+                  - chime:DescribeChannelMembership
+                  - chime:GetChannelMessage
+                  - chime:ListChannelMemberships
+                  - chime:ListChannelMessages
+                  - chime:ListChannelModerators
+                  - chime:SendChannelMessage
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: MeetingActions
+                Effect: Allow
+                Action:
+                  - chime:BatchCreateAttendee
+                  - chime:CreateAttendee
+                  - chime:DeleteAttendee
+                  - chime:DeleteMeeting
+                  - chime:GetAttendee
+                  - chime:GetMeeting
+                  - chime:ListAttendees
+                  - chime:ListAttendeeTags
+                  - chime:ListMeetingTags
+                  - chime:TagAttendee
+                  - chime:TagMeeting
+                  - chime:UntagAttendee
+                  - chime:UntagMeeting
+                Resource: !Sub arn:${AWS::Partition}:chime::${AWS::AccountId}:meeting/*
+              - Sid: TagResourceActions
+                Effect: Allow
+                Action:
+                  - chime:ListTagsForResource
+                  - chime:TagResource
+                  - chime:UntagResource
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime::${AWS::AccountId}:meeting/*
+              - Sid: GlobalActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstance
+                  - chime:CreateAppInstanceUser
+                  - chime:CreateMeeting
+                  - chime:CreateMeetingWithAttendees
+                  - chime:GetMessagingSessionEndpoint
+                  - chime:GetRetentionSettings
+                  - chime:ListMeetings
+                  - chime:StartMeetingTranscription
+                  - chime:StopMeetingTranscription
+                Resource: '*'
   IamUser:
     Type: AWS::IAM::User
     Properties:
@@ -368,46 +407,66 @@ Resources:
       Policies:
         - PolicyName: VirtualCareRolePolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: 2012-10-17
             Statement:
-              - Effect: Allow
+              - Sid: AppInstanceActions
+                Effect: Allow
                 Action:
-                  - sts:AssumeRole
-                  - chime:CreateAppInstanceAdmin
-                  - chime:ListChannelsModeratedByAppInstanceUser
-                  - chime:DescribeChannelMembership
-                  - chime:ListChannelModerators
-                  - chime:DescribeChannel
-                  - chime:ListChannelMessages
-                  - chime:ListAppInstanceAdmins
-                  - chime:ListChannels
-                  - chime:UpdateAppInstanceUser
-                  - chime:GetMessagingSessionEndpoint
+                  - chime:DeleteAppInstance
                   - chime:DescribeAppInstance
-                  - chime:DeleteChannel
-                  - chime:GetChannelMessage
-                  - chime:CreateChannelMembership
+                  - chime:GetAppInstanceRetentionSettings
+                  - chime:ListAppInstances
+                  - chime:PutAppInstanceRetentionSettings
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+              - Sid: AppInstanceAdminActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstanceAdmin
+                  - chime:DeleteAppInstanceAdmin
+                  - chime:DescribeAppInstanceAdmin
+                  - chime:ListAppInstanceAdmins
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: AppInstanceUserActions
+                Effect: Allow
+                Action:
                   - chime:Connect
                   - chime:CreateChannel
-                  - chime:PutAppInstanceRetentionSettings
-                  - chime:ListChannelMembershipsForAppInstanceUser
-                  - chime:CreateChannelModerator
-                  - chime:ListChannelMemberships
-                  - chime:CreateAppInstance
-                  - chime:SendChannelMessage
-                  - chime:DescribeAppInstanceAdmin
-                  - chime:GetAppInstanceRetentionSettings
-                  - chime:DeleteAppInstanceAdmin
-                  - chime:GetRetentionSettings
-                  - chime:ListAppInstanceUsers
-                  - chime:ListAppInstanceUserEndpoints
-                  - chime:ListAppInstances
-                  - chime:DescribeAppInstanceUser
                   - chime:DeleteAppInstanceUser
+                  - chime:DescribeAppInstanceUser
+                  - chime:ListAppInstanceUserEndpoints
+                  - chime:ListAppInstanceUsers
+                  - chime:ListChannels
+                  - chime:ListChannelMembershipsForAppInstanceUser
+                  - chime:ListChannelsModeratedByAppInstanceUser
+                  - chime:UpdateAppInstanceUser
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: ChannelUserActions
+                Effect: Allow
+                Action:
+                  - chime:CreateChannelMembership
+                  - chime:CreateChannelModerator
+                  - chime:DeleteChannel
                   - chime:DeleteChannelMembership
+                  - chime:DescribeChannel
+                  - chime:DescribeChannelMembership
+                  - chime:GetChannelMessage
+                  - chime:ListChannelMemberships
+                  - chime:ListChannelMessages
+                  - chime:ListChannelModerators
+                  - chime:SendChannelMessage
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: GlobalActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstance
                   - chime:CreateAppInstanceUser
-                  - chime:DeleteAppInstance
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+                  - chime:GetMessagingSessionEndpoint
+                  - chime:GetRetentionSettings
+                Resource: '*'
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
