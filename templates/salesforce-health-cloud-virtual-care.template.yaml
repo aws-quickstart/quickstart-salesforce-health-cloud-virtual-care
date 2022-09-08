@@ -3,13 +3,6 @@ Description: AWS CloudFormation Template to create resources required to send Ch
 Metadata:
   LintSpellExclude:
     - Salesforce
-    - OAuth
-  SentenceCaseExclude:
-    - Developer
-    - Edition
-    - If
-    - Production
-    - Trial
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
     ParameterGroups:
