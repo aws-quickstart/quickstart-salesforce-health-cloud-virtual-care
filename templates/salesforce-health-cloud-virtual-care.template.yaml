@@ -474,7 +474,7 @@ Resources:
       Description: >-
         Amazon EventBridge destination role for invoking the Salesforce service
         provider event API endpoint.
-      RoleName: Salesforce_EventBridge_Invoke_Api_Destination
+      Path: /salesforce/
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -484,7 +484,6 @@ Resources:
                 - events.amazonaws.com
             Action:
               - sts:AssumeRole
-      Path: /service-role/
       Policies:
         - PolicyName: SalesforceApiDestinationPolicy
           PolicyDocument:
@@ -497,7 +496,6 @@ Resources:
   SalesforceConnectionSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: SalesforceOAuthSecret
       Description: OAuth connection credential secret.
       SecretString: !Sub >-
         {
@@ -509,7 +507,6 @@ Resources:
   SalesforceOAuthConnection:
     Type: AWS::Events::Connection
     Properties:
-      Name: SalesforceOAuthConnection
       AuthorizationType: OAUTH_CLIENT_CREDENTIALS
       AuthParameters:
         OAuthParameters:
