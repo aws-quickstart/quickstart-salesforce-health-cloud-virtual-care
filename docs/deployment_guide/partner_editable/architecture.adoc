@@ -12,9 +12,8 @@ image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
 As shown in <<architecture1>>, this Quick Start sets up the following:
 
 * An Amazon EventBridge rule that filters `aws.chime` events and a pre-defined https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html[input transformer] to create a https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm[{partner-company-short-name} platform event].
-* An Amazon EventBridge API destination with a pre-defined connection and secret using {partner-company-short-name} connected app details to:
-** Submit transcription requests to Amazon Chime Media Services, which are processed by Amazon Transcribe Medical.
-** Submit events to the default Amazon EventBridge bus.
+* An Amazon Chime Media Services endpoint for receiving transcription requests from the {partner-company-short-name} connected app sent via the Chime SDK, which then passes the requests to Amazon Transcribe Medical for processing.
+* An Amazon EventBridge API destination with a pre-defined connection and secret using {partner-company-short-name} connected app details to submit events to the default Amazon EventBridge bus.
 * An Amazon SQS queue acting as a https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html[dead-letter queue] for failed event delivery.
 ** AWS KMS is used to encrypt all messages stored in the SQS queue.
 * An Amazon CloudWatch alarm that monitors the Amazon SQS queue depth and alerts when the configured threshold is exceeded.
