@@ -3,13 +3,6 @@ Description: AWS CloudFormation Template to create resources required to send Ch
 Metadata:
   LintSpellExclude:
     - Salesforce
-    - OAuth
-  SentenceCaseExclude:
-    - Developer
-    - Edition
-    - If
-    - Production
-    - Trial
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -261,7 +254,7 @@ Parameters:
     Type: String
     Description: >-
       Name for the AWS IAM group that grants the AWS IAM user account the
-      necessary permissions via the associated AWS managed AmazonChimeSDK
+      necessary permissions via the associated managed VirtualCareUserPolicy
       IAM policy.
     MinLength: 1
     MaxLength: 128
@@ -274,11 +267,116 @@ Conditions:
 Resources:
   IamGroup:
     Type: AWS::IAM::Group
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            EIAMPolicyWildcardResource: >-
+              StartMeetingTranscription and StopMeetingTranscription require a
+              wildcard resource, and cfn-lint v0.64.1 incorrectly alerts on this.
     Properties:
       GroupName: !Ref IamGroupName
       Path: /salesforce/
-      ManagedPolicyArns:
-        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonChimeSDK
+      Policies:
+        - PolicyName: VirtualCareUserPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: AppInstanceActions
+                Effect: Allow
+                Action:
+                  - chime:DeleteAppInstance
+                  - chime:DescribeAppInstance
+                  - chime:GetAppInstanceRetentionSettings
+                  - chime:ListAppInstances
+                  - chime:PutAppInstanceRetentionSettings
+                  - chime:TagResource
+                  - chime:UntagResource
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+              - Sid: AppInstanceAdminActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstanceAdmin
+                  - chime:DeleteAppInstanceAdmin
+                  - chime:DescribeAppInstanceAdmin
+                  - chime:ListAppInstanceAdmins
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: AppInstanceUserActions
+                Effect: Allow
+                Action:
+                  - chime:Connect
+                  - chime:CreateChannel
+                  - chime:DeleteAppInstanceUser
+                  - chime:DescribeAppInstanceUser
+                  - chime:ListAppInstanceUsers
+                  - chime:ListAppInstanceUserEndpoints
+                  - chime:ListChannelMembershipsForAppInstanceUser
+                  - chime:ListChannels
+                  - chime:ListChannelsModeratedByAppInstanceUser
+                  - chime:UpdateAppInstanceUser
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: ChannelUserActions
+                Effect: Allow
+                Action:
+                  - chime:CreateChannelMembership
+                  - chime:CreateChannelModerator
+                  - chime:DeleteChannel
+                  - chime:DeleteChannelMembership
+                  - chime:DescribeChannel
+                  - chime:DescribeChannelMembership
+                  - chime:GetChannelMessage
+                  - chime:ListChannelMemberships
+                  - chime:ListChannelMessages
+                  - chime:ListChannelModerators
+                  - chime:SendChannelMessage
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: MeetingActions
+                Effect: Allow
+                Action:
+                  - chime:BatchCreateAttendee
+                  - chime:CreateAttendee
+                  - chime:DeleteAttendee
+                  - chime:DeleteMeeting
+                  - chime:GetAttendee
+                  - chime:GetMeeting
+                  - chime:ListAttendees
+                  - chime:ListAttendeeTags
+                  - chime:ListMeetingTags
+                  - chime:TagAttendee
+                  - chime:TagMeeting
+                  - chime:UntagAttendee
+                  - chime:UntagMeeting
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
+              - Sid: TagResourceActions
+                Effect: Allow
+                Action:
+                  - chime:ListTagsForResource
+                  - chime:TagResource
+                  - chime:UntagResource
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
+              - Sid: GlobalActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstance
+                  - chime:CreateAppInstanceUser
+                  - chime:CreateMeeting
+                  - chime:CreateMeetingWithAttendees
+                  - chime:GetMessagingSessionEndpoint
+                  - chime:GetRetentionSettings
+                  - chime:ListMeetings
+                  - chime:StartMeetingTranscription
+                  - chime:StopMeetingTranscription
+                Resource: '*'
+
   IamUser:
     Type: AWS::IAM::User
     Properties:
@@ -289,6 +387,121 @@ Resources:
       Path: /salesforce/
       Groups:
         - !Ref IamGroup
+  ChimeSDKMessagingRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            EIAMPolicyWildcardResource: >-
+              StartMeetingTranscription and StopMeetingTranscription require a
+              wildcard resource, and cfn-lint v0.64.1 incorrectly alerts on this.
+    Properties:
+      RoleName: VirtualCareRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt IamUser.Arn
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: VirtualCareRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: AppInstanceActions
+                Effect: Allow
+                Action:
+                  - chime:DeleteAppInstance
+                  - chime:DescribeAppInstance
+                  - chime:GetAppInstanceRetentionSettings
+                  - chime:ListAppInstances
+                  - chime:PutAppInstanceRetentionSettings
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+              - Sid: AppInstanceAdminActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstanceAdmin
+                  - chime:DeleteAppInstanceAdmin
+                  - chime:DescribeAppInstanceAdmin
+                  - chime:ListAppInstanceAdmins
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: AppInstanceUserActions
+                Effect: Allow
+                Action:
+                  - chime:Connect
+                  - chime:CreateChannel
+                  - chime:DeleteAppInstanceUser
+                  - chime:DescribeAppInstanceUser
+                  - chime:ListAppInstanceUserEndpoints
+                  - chime:ListAppInstanceUsers
+                  - chime:ListChannels
+                  - chime:ListChannelMembershipsForAppInstanceUser
+                  - chime:ListChannelsModeratedByAppInstanceUser
+                  - chime:UpdateAppInstanceUser
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: ChannelUserActions
+                Effect: Allow
+                Action:
+                  - chime:CreateChannelMembership
+                  - chime:CreateChannelModerator
+                  - chime:DeleteChannel
+                  - chime:DeleteChannelMembership
+                  - chime:DescribeChannel
+                  - chime:DescribeChannelMembership
+                  - chime:GetChannelMessage
+                  - chime:ListChannelMemberships
+                  - chime:ListChannelMessages
+                  - chime:ListChannelModerators
+                  - chime:SendChannelMessage
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+              - Sid: MeetingActions
+                Effect: Allow
+                Action:
+                  - chime:BatchCreateAttendee
+                  - chime:CreateAttendee
+                  - chime:DeleteAttendee
+                  - chime:DeleteMeeting
+                  - chime:GetAttendee
+                  - chime:GetMeeting
+                  - chime:ListAttendees
+                  - chime:ListAttendeeTags
+                  - chime:ListMeetingTags
+                  - chime:TagAttendee
+                  - chime:TagMeeting
+                  - chime:UntagAttendee
+                  - chime:UntagMeeting
+                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
+              - Sid: TagResourceActions
+                Effect: Allow
+                Action:
+                  - chime:ListTagsForResource
+                  - chime:TagResource
+                  - chime:UntagResource
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
+              - Sid: GlobalActions
+                Effect: Allow
+                Action:
+                  - chime:CreateAppInstance
+                  - chime:CreateAppInstanceUser
+                  - chime:CreateMeeting
+                  - chime:CreateMeetingWithAttendees
+                  - chime:GetMessagingSessionEndpoint
+                  - chime:GetRetentionSettings
+                  - chime:ListMeetings
+                  - chime:StartMeetingTranscription
+                  - chime:StopMeetingTranscription
+                Resource: '*'
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
@@ -303,7 +516,7 @@ Resources:
       Description: >-
         Amazon EventBridge destination role for invoking the Salesforce service
         provider event API endpoint.
-      RoleName: Salesforce_EventBridge_Invoke_Api_Destination
+      Path: /salesforce/
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -313,7 +526,6 @@ Resources:
                 - events.amazonaws.com
             Action:
               - sts:AssumeRole
-      Path: /service-role/
       Policies:
         - PolicyName: SalesforceApiDestinationPolicy
           PolicyDocument:
@@ -326,7 +538,6 @@ Resources:
   SalesforceConnectionSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: SalesforceOAuthSecret
       Description: OAuth connection credential secret.
       SecretString: !Sub >-
         {
@@ -338,14 +549,13 @@ Resources:
   SalesforceOAuthConnection:
     Type: AWS::Events::Connection
     Properties:
-      Name: SalesforceOAuthConnection
       AuthorizationType: OAUTH_CLIENT_CREDENTIALS
       AuthParameters:
         OAuthParameters:
           AuthorizationEndpoint: !Ref SalesforceAuthorizationEndpoint
           ClientParameters:
-            ClientID: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientID}}'
-            ClientSecret: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:ClientSecret}}'
+            ClientID: !Ref SalesforceOAuthClientID
+            ClientSecret: !Ref SalesforceOAuthClientSecret
           HttpMethod: POST
           OAuthHttpParameters:
             BodyParameters:
@@ -354,11 +564,10 @@ Resources:
                 Value: password
               - IsValueSecret: false
                 Key: username
-                Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Username}}'
+                Value: !Ref SalesforceUsername
               - IsValueSecret: true
                 Key: password
-                Value: '{{resolve:secretsmanager:SalesforceOAuthSecret:SecretString:Password}}'
-    DependsOn: SalesforceConnectionSecret
+                Value: !Ref SalesforcePassword
   SalesforceApiDestination:
     Type: AWS::Events::ApiDestination
     Properties:
