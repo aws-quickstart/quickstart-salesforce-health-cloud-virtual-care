@@ -391,6 +391,15 @@ Resources:
         - !Ref IamGroup
   ChimeSDKMessagingRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            EIAMPolicyWildcardResource: >-
+              StartMeetingTranscription and StopMeetingTranscription require a
+              wildcard resource, and cfn-lint v0.64.1 incorrectly alerts on this.
     Properties:
       RoleName: VirtualCareRole
       AssumeRolePolicyDocument:
@@ -489,10 +498,10 @@ Resources:
                 Action:
                   - chime:CreateAppInstance
                   - chime:CreateAppInstanceUser
-                  - chime:GetMessagingSessionEndpoint
-                  - chime:GetRetentionSettings
                   - chime:CreateMeeting
                   - chime:CreateMeetingWithAttendees
+                  - chime:GetMessagingSessionEndpoint
+                  - chime:GetRetentionSettings
                   - chime:ListMeetings
                   - chime:StartMeetingTranscription
                   - chime:StopMeetingTranscription
