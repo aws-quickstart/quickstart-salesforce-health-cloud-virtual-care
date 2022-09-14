@@ -318,7 +318,9 @@ Resources:
                   - chime:ListChannels
                   - chime:ListChannelsModeratedByAppInstanceUser
                   - chime:UpdateAppInstanceUser
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
               - Sid: ChannelUserActions
                 Effect: Allow
                 Action:
@@ -444,7 +446,9 @@ Resources:
                   - chime:ListChannelMembershipsForAppInstanceUser
                   - chime:ListChannelsModeratedByAppInstanceUser
                   - chime:UpdateAppInstanceUser
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
               - Sid: ChannelUserActions
                 Effect: Allow
                 Action:
