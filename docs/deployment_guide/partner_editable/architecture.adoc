@@ -23,27 +23,3 @@ As shown in <<architecture1>>, this Quick Start sets up the following:
 ** An Amazon Simple Notification Service (Amazon SNS) topic to send email notifications to interested parties when the CloudWatch alarm is triggered.
 
 * An AWS Secrets Manager secret for securely storing {partner-company-short-name} credentials and connection secrets.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-* An Amazon EventBridge rule that filters `aws.chime` events and a predefined https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html[input transformer^] to create a https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm[{partner-company-short-name} platform event^].
-* An Amazon Chime media services endpoint for receiving transcription requests from the {partner-company-short-name}-connected app sent via the Amazon Chime SDK, which then passes the requests to Amazon Transcribe Medical for processing.
-* An Amazon EventBridge API destination with a predefined connection and secret using {partner-company-short-name}-connected app details to submit events to the default Amazon EventBridge bus.
-* An Amazon Simple Queue Service (Amazon SQS) queue acting as a https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html[dead-letter queue^] for failed event delivery.
-** AWS Key Management Service (AWS KMS) to encrypt all messages stored in the Amazon SQS queue.
-* An Amazon CloudWatch alarm that monitors the Amazon SQS queue depth and alerts when the configured threshold is exceeded.
-* An Amazon Simple Notification Service (Amazon SNS) topic to send email notifications to interested parties when the CloudWatch alarm is triggered.
-* An AWS Secrets Manager secret for securely storing {partner-product-short-name} credentials and connection secrets.
