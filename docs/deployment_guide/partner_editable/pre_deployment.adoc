@@ -8,4 +8,4 @@
 * https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new[Creating an AWS account that is part of your organization^]
 
 [start=2]
-. Configure a {partner-company-short-name}-connected app to integrate the events generated in AWS that are sent via Amazon EventBridge to {partner-company-short-name} platform events. For instructions, refer to XX.
+. Configure a {partner-company-short-name}-connected app to integrate the events generated in AWS that are sent via Amazon EventBridge to {partner-company-short-name} platform events. For instructions, refer to https://help.salesforce.com/s/articleView?id=sf.admin_virtual_care_connect_amazon_to_salesforce.htm&type=5[Connect Amazon to Salesforce^].
