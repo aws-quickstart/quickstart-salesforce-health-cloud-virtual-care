@@ -815,6 +815,26 @@ a img {
   background:#ffffb3;
 }
 
+.watermark {
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  color:#00f;
+  cursor: default;
+  display: block;
+  font-size: 400px;
+  font-weight: 1000;
+  margin: 0;
+  opacity:0.05;
+  top: 30%;
+  position: fixed;
+  text-align: center;
+  transform: rotate(-30deg);
+  user-select: none;
+  z-index: -1;
+}
+
 .footer-text{color:rgba(255,255,255,.8);line-height:1.44;background:#1c222a;padding:1.25em;max-width:100%;margin-bottom:unset}
 p.footer-text a{color:#d7d8d8}
 
@@ -823,7 +843,7 @@ p.footer-text a{color:#d7d8d8}
 .image-container img {
   width: 1px;
   height: 1px;
-  } 
+  }
 /* END dummy image */
 
 </style>
@@ -840,11 +860,7 @@ p.footer-text a{color:#d7d8d8}
 <li><a href="#_deployment_options">Deployment options</a></li>
 <li><a href="#_predeployment_steps">Predeployment steps</a></li>
 <li><a href="#_deployment_steps">Deployment steps</a></li>
-<li><a href="#_postdeployment_steps">Postdeployment steps</a>
-<ul class="sectlevel2">
-<li><a href="#_create_an_iam_access_key">Create an IAM access key</a></li>
-</ul>
-</li>
+<li><a href="#_postdeployment_steps">Postdeployment steps</a></li>
 <li><a href="#_troubleshooting">Troubleshooting</a></li>
 <li><a href="#_feedback">Feedback</a></li>
 <li><a href="#_notices">Notices</a></li>
@@ -861,18 +877,18 @@ p.footer-text a{color:#d7d8d8}
 <img src="https://aws-quickstart.s3.amazonaws.com/docs/deployment-guide/aws-quickstart-deployment-graphic.png" alt="QS" width="80" height="80">
 </div>
 </div>
-<div class="imageblock image-container">
-<div class="content">
-<img src="https://aws-quickstart.s3.amazonaws.com/quickstart-salesforce-health-cloud-virtual-care/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="">
-</div>
-</div>
 <div class="paragraph text-center">
-<p><strong>May 2022</strong><br>
+<p><strong>September 2022</strong><br>
 <em>Harsha Talkad and Vandana Sreenivasa Rao, Salesforce, Inc</em><br>
 <em>Chris Riley, AWS Strategic Accounts team</em><br>
 <em>Troy Lindsay and Dylan Owen, AWS Integration &amp; Automation team</em><br></p>
 </div>
-<div class="admonitionblock tip text-left">
+<div class="imageblock text-left image-container">
+<div class="content">
+<img src="https://aws-quickstart.s3.amazonaws.com/quickstart-salesforce-health-cloud-virtual-care/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="">
+</div>
+</div>
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
@@ -885,7 +901,7 @@ Refer to the <a href="https://github.com/aws-quickstart/quickstart-salesforce-he
 </table>
 </div>
 <div class="paragraph text-left">
-<p>This Quick Start was created by Salesforce, Inc in collaboration with Amazon Web Services (AWS). <a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments that help people deploy popular technologies on AWS according to AWS best practices.</p>
+<p>This Quick Start was created by Salesforce, Inc in collaboration with Amazon Web Services (AWS). <a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments that help people deploy popular technologies on AWS according to AWS best practices. If you&#8217;re unfamiliar with AWS Quick Starts, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Quick Start General Information Guide</a>.</p>
 </div>
 </div>
 </div>
@@ -894,6 +910,9 @@ Refer to the <a href="https://github.com/aws-quickstart/quickstart-salesforce-he
 <div class="sectionbody">
 <div class="paragraph">
 <p>This Quick Start deploys Salesforce Health Cloud: Virtual Care on the AWS Cloud. If you are unfamiliar with AWS Quick Starts, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Quick Start General Information Guide</a>.</p>
+</div>
+<div class="paragraph">
+<p>This deployment integrates Virtual Care with Amazon Chime to offer video conferencing for patients using a healthcare platform connected to Salesforce Health Cloud. Virtual Care sessions are recorded via Amazon Chime, and conversations are transcribed to text via Amazon Transcribe Medical for future reference.</p>
 </div>
 </div>
 </div>
@@ -914,7 +933,7 @@ AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
 <div class="content">
-<img src="docs/deployment_guide/images/architecture_diagram.png" alt="Architecture">
+<img src="docs/deployment_guide/images/architecture-diagram-salesforce-health-cloud-virtual-care.png" alt="Architecture">
 </div>
 <div class="title">Figure 1. Quick Start architecture for Virtual Care on AWS</div>
 </div>
@@ -924,19 +943,38 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>An Amazon EventBridge rule that filters aws.chime events and a pre-defined Input Transformer to create a Salesforce platform event.</p>
+<p>Amazon Chime media control plane for receiving requests from Salesforce Health Cloud when patients request appointments through their healthcare provider application.</p>
 </li>
 <li>
-<p>An Amazon EventBridge API destination with a pre-defined connection and secret using Salesforce connected app details.</p>
+<p>An EventBridge rule that filters aws.chime events and a predefined <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html" target="_blank" rel="noopener">input transformer rule</a> that modifies the event and creates a <a href="https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm" target="_blank" rel="noopener">Salesforce platform event</a>.</p>
 </li>
 <li>
-<p>An Amazon SQS queue acting as a dead-letter queue for failed event delivery using AWS KMS to encrypt messages.</p>
+<p>During an active session via a Salesforce-connected app, Amazon Chime SDK to communicate to the Amazon Chime media services endpoint to receive transcription requests.</p>
 </li>
 <li>
-<p>An Amazon Cloudwatch alarm that monitors the Amazon SQS queue depth.</p>
+<p>Amazon Transcribe Medical for receiving and processing transcription requests.</p>
 </li>
 <li>
-<p>An Amazon SNS topic to receive alarm events and send email notifications to interested parties.</p>
+<p>For event delivery failure handling:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An Amazon Simple Queue Service (Amazon SQS) queue that serves as a <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html" target="_blank" rel="noopener">dead-letter queue</a>.</p>
+</li>
+<li>
+<p>AWS Key Management Service (AWS KMS) to encrypt all messages stored in the Amazon SQS queue.</p>
+</li>
+<li>
+<p>An Amazon CloudWatch alarm that monitors the Amazon SQS queue depth and alerts when the configured threshold is exceeded.</p>
+</li>
+<li>
+<p>An Amazon Simple Notification Service (Amazon SNS) topic to send email notifications to interested parties when the CloudWatch alarm is triggered.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>An AWS Secrets Manager secret for securely storing Salesforce credentials and connection secrets.</p>
 </li>
 </ul>
 </div>
@@ -946,46 +984,39 @@ AWS Cloud.</p>
 <h2 id="_deployment_options">Deployment options</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start provides the following deployment option:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://raw.githubusercontent.com/aws-quickstart/quickstart-salesforce-health-cloud-virtual-care/main/templates/salesforce-health-cloud-virtual-care.template.yaml" target="_blank" rel="noopener">Deploy Virtual Care into a new AWS Account</a>.
-This option provisions Virtual Care resources into your new AWS account.</p>
-</li>
-</ul>
+<p>This Quick Start provides the following deployment option for provisioning Virtual Care resources into your new AWS account. Configure Virtual Care settings as needed.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start lets you configure Virtual Care settings.</p>
+<p><a href="https://fwd.aws/jq4y3?" target="_blank" rel="noopener">Deploy Virtual Care into a new AWS Account</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_predeployment_steps">Predeployment steps</h2>
 <div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Configure a new AWS account. You can configure either a new standalone AWS account or a new account within an existing AWS organization. For more information, refer to:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A new AWS account is required to install Salesforce Health Cloud: Virtual Care.
-This can be done as a new standalone AWS account or as a new account in an existing AWS Organization.</p>
-<div class="ulist">
-<ul>
-<li>
-<p>To create a new standalone AWS account, refer to the following instructions: <a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/" class="bare">https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/</a>.</p>
+<p><a href="https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/" target="_blank" rel="noopener">How do I create and activate a new AWS account?</a></p>
 </li>
 <li>
-<p>To create a new AWS account using an AWS Organization, refer to the following instructions: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new" class="bare">https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new</a>.</p>
+<p><a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new" target="_blank" rel="noopener">Creating an AWS account that is part of your organization</a></p>
 </li>
 </ul>
 </div>
 </li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="2">
 <li>
-<p>A Salesforce connected app must be configured prior to deploying the AWS Quickstart.
-This integrates the events generated in AWS that are sent via Amazon EventBridge to Salesforce platform events.
-Please refer to your Salesforce Health Cloud: Virtual Care setup instructions provided as part of the pilot.</p>
+<p>Configure a Salesforce-connected app to integrate the events generated in AWS that are sent via Amazon EventBridge to Salesforce platform events. For instructions, refer to XX.</p>
 </li>
-</ul>
+</ol>
 </div>
 </div>
 </div>
@@ -1022,7 +1053,7 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <p>On the <strong>Configure stack options</strong> page, you can <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html" target="_blank" rel="noopener">specify tags</a> (key-value pairs) for resources in your stack and <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html" target="_blank" rel="noopener">set advanced options</a>. When you finish, choose <strong>Next</strong>.</p>
 </li>
 <li>
-<p>On the <strong>Review</strong> page, review and confirm the template settings. Under <strong>Capabilities</strong>, select the two check boxes to acknowledge that the template creates IAM resources that might require the ability to automatically expand macros.</p>
+<p>On the <strong>Review</strong> page, review and confirm the template settings. Under <strong>Capabilities</strong>, select all of the check boxes to acknowledge that the template creates IAM resources that might require the ability to automatically expand macros.</p>
 </li>
 <li>
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
@@ -1040,26 +1071,36 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <div class="sect1">
 <h2 id="_postdeployment_steps">Postdeployment steps</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>Salesforce Health Cloud: Virtual Care requires a Salesforce named credential to be configured for invoking AWS services.</p>
-<div class="ulist">
-<ul>
-<li>
-<p>The Salesforce named credential will store an AWS IAM access key and secret that will be used for authenticating requests to AWS service endpoints.</p>
-</li>
-<li>
-<p>The required access key and secret are intentionally not created for the new AWS IAM user service account for security reasons.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>Configure a <a href="https://help.salesforce.com/s/articleView?id=sf.named_credentials_define.htm&amp;type=5" target="_blank" rel="noopener">Salesforce named credential</a> so that Virtual Care can invoke AWS services.</p>
 </div>
-</li>
-</ul>
+<div class="paragraph">
+<p>To use AWS Identity and Access Management (IAM) to retrieve the user&#8217;s access key and secret that&#8217;s generated by this Quick Start, do the following steps:</p>
 </div>
-<div class="sect2">
-<h3 id="_create_an_iam_access_key">Create an IAM access key</h3>
-
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Log in to your AWS account. This account must have sufficient privileges to create an access key for the service account. For more information, refer to <a href="https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateAccessKey.html" target="_blank" rel="noopener">CreateAccessKey</a>.</p>
+</li>
+<li>
+<p>In the AWS Management Console, choose <strong>Services &gt; Identity Access Management (IAM)</strong>.</p>
+</li>
+<li>
+<p>Choose <strong>Users</strong>.</p>
+</li>
+<li>
+<p>Choose the user specified in the AWS CloudFormation template definition.</p>
+</li>
+<li>
+<p>Choose the <strong>Security Credentials</strong> tab.</p>
+</li>
+<li>
+<p>Under the <strong>Access Key</strong> section, choose <strong>Create access key</strong>. This action creates an access key and allows you to copy or download the contents.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The access key ID and secret access key is used to configure a Salesforce-named credential.</p>
 </div>
 </div>
 </div>
@@ -1068,6 +1109,9 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 <div class="sectionbody">
 <div class="paragraph">
 <p>For troubleshooting common Quick Start issues, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Quick Start General Information Guide</a> and <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html" target="_blank" rel="noopener">Troubleshooting CloudFormation</a>.</p>
+</div>
+<div class="paragraph">
+<p>After you successfully deploy a Quick Start, confirm that your resources and services are updated and configured—including any required patches—to meet your security and other needs. For more information, refer to the <a href="https://aws.amazon.com/compliance/shared-responsibility-model/" target="_blank" rel="noopener">Shared Responsibility Model</a>.</p>
 </div>
 </div>
 </div>
@@ -1119,8 +1163,8 @@ Unless you are customizing the Quick Start templates for your own projects, don&
 </html>
 <!--
 repo commit:
-5d6341c23debf9ed01fcf808a632cc2f84973228
+3ca1184b84f924ad60ee737c8900e9d6ab0059c9
 
 submodule config:
- 8e6ffc19c26cbdc2c4dc782feeb3429965305b54 docs/boilerplate (8e6ffc1)
+ 1b92b5ce4cd2903e63e2927a633a259dfe271531 docs/boilerplate (1b92b5c)
 -->

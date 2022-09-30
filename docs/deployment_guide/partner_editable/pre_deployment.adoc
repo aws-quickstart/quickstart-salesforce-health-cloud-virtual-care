@@ -2,10 +2,10 @@
 
 == Predeployment steps
 
-* A new AWS account is required to install {partner-product-name}.
-  This can be done as a new standalone AWS account or as a new account in an existing AWS Organization.
-** To create a new standalone AWS account, refer to the following instructions: https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/.
-** To create a new AWS account using an AWS Organization, refer to the following instructions: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new.
-* A {partner-company-short-name} connected app must be configured prior to deploying the AWS Quickstart.
-  This integrates the events generated in AWS that are sent via Amazon EventBridge to {partner-company-short-name} platform events.
-  Please refer to your {partner-product-name} setup instructions provided as part of the pilot.
+. Configure a new AWS account. You can configure either a new standalone AWS account or a new account within an existing AWS organization. For more information, refer to:
+
+* https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/[How do I create and activate a new AWS account?^]
+* https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_create.html#orgs_manage_accounts_create-new[Creating an AWS account that is part of your organization^]
+
+[start=2]
+. Configure a {partner-company-short-name}-connected app to integrate the events generated in AWS that are sent via Amazon EventBridge to {partner-company-short-name} platform events. For instructions, refer to XX.

@@ -1,5 +1,8 @@
 This Quick Start deploys {partner-product-name} on the AWS Cloud. If you are unfamiliar with AWS Quick Starts, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^].
 
+
+This deployment integrates {partner-product-short-name} with Amazon Chime to offer video conferencing for patients using a healthcare platform connected to Salesforce Health Cloud. {partner-product-short-name} sessions are recorded via Amazon Chime, and conversations are transcribed to text via Amazon Transcribe Medical for future reference.
+
 // For advanced information about the product that this Quick Start deploys, refer to the https://{quickstart-github-org}.github.io/{quickstart-project-name}/operational/index.html[Operational Guide^].
 
 // For information about using this Quick Start for migrations, refer to the https://{quickstart-github-org}.github.io/{quickstart-project-name}/migration/index.html[Migration Guide^].
