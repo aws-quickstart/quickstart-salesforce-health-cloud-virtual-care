@@ -1,6 +1,6 @@
 // Edit this placeholder text as necessary to describe the deployment options.
 
-This Quick Start provides the following deployment option for provisioning {partner-product-short-name} resources into your new AWS account. Configure {partner-product-short-name} settings as needed.
+This Partner Solution provides the following deployment option for provisioning {partner-product-short-name} resources into your new AWS account. Configure {partner-product-short-name} settings as needed.
 
-https://fwd.aws/jq4y3?[Deploy {partner-product-short-name} into a new AWS Account^]
+https://fwd.aws/jq4y3?[Deploy {partner-product-short-name} into a new AWS account^]
 
