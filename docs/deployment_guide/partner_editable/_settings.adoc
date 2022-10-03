@@ -4,7 +4,7 @@
 :partner-product-name: {partner-company-short-name} Health Cloud: Virtual Care
 :partner-product-short-name: Virtual Care
 :partner-company-name: Salesforce, Inc
-:doc-month: September
+:doc-month: October
 :doc-year: 2022
 :partner-contributors: Harsha Talkad and Vandana Sreenivasa Rao, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
