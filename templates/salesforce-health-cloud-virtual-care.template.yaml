@@ -234,7 +234,7 @@ Parameters:
   IamUserName:
     Type: String
     Description: >-
-      User name for the AWS IAM user account used as the Salesforce-named credential service account.
+      User name for the AWS IAM user account used as the Salesforce Named Credential service account.
     MinLength: 1
     MaxLength: 64
     AllowedPattern: ^[\w+=,.@-]+$
@@ -244,7 +244,7 @@ Parameters:
   IamPassword:
     Type: String
     Description: >-
-      Password for the AWS IAM user account used as the Salesforce-named credential service account.
+      Password for the AWS IAM user account used as the Salesforce Named Credential service account.
     NoEcho: True
     MinLength: 8
     MaxLength: 128
