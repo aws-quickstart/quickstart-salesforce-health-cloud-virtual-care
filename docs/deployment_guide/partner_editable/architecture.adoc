@@ -15,7 +15,7 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 * An EventBridge rule that filters aws.chime events and a predefined https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html[input transformer rule^] that modifies the event and creates a https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm[{partner-company-short-name} platform event^].
 * During an active session via a {partner-company-short-name}-connected app, Amazon Chime SDK to communicate to the Amazon Chime media services endpoint to receive transcription requests.
 
-* Amazon Transcribe Medical for receiving and processing transcription requests.
+* Amazon Transcribe or Amazon Transcribe Medical for receiving and processing transcription requests.
 * For event delivery failure handling:
 ** An Amazon Simple Queue Service (Amazon SQS) queue that serves as a https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rule-dlq.html[dead-letter queue^].
 ** AWS Key Management Service (AWS KMS) to encrypt all messages stored in the Amazon SQS queue.
