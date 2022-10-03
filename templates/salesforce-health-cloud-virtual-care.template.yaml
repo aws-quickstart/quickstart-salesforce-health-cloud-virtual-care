@@ -174,7 +174,7 @@ Parameters:
   DlqCmkAlias:
     Type: String
     Description: >-
-      Alias of a symmetric AWS KMS custome-managed key (CMK) to use for
+      Alias of a symmetric AWS KMS customer-managed key (CMK) to use for
       server-side encryption of any Amazon Chime messages stored in the
       Amazon SQS dead-letter queue. The default is to use the AWS-managed CMK
       for Amazon SQS (SSE-SQS). Alternatively, enter the alias of your custom
