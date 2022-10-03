@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: AWS CloudFormation Template to create resources required to send Chime events to Salesforce. (qs-1ssngicuj)
+Description: AWS CloudFormation template to create resources required to send Amazon Chime events to Salesforce. (qs-1ssngicuj)
 Metadata:
   LintSpellExclude:
     - Salesforce
@@ -34,7 +34,7 @@ Metadata:
           - MaximumRetryAttempts
           - MaximumEventAgeInSeconds
       - Label:
-          default: Dead letter queue configuration
+          default: Dead-letter queue configuration
         Parameters:
           - DlqName
           - DlqCmkAlias
@@ -89,20 +89,20 @@ Parameters:
   SalesforceUsername:
     Type: String
     Description: >-
-      Salesforce username that will be stored in AWS Secrets Manager and used
+      Salesforce user name to be stored in AWS Secrets Manager and used
       by Amazon EventBridge for authentication when sending events.
     MinLength: 1
   SalesforcePassword:
     Type: String
     Description: >-
-      Salesforce password that will be stored in AWS Secrets Manager and used
+      Salesforce password to be stored in AWS Secrets Manager and used
       by Amazon EventBridge for authentication when sending events.
     NoEcho: True
     MinLength: 8
   SalesforceOAuthClientID:
     Type: String
     Description: >-
-      Salesforce provided OAuth client ID that will be stored in
+      Salesforce-provided OAuth client ID to be stored in
       AWS Secrets Manager and used by Amazon EventBridge for authentication
       when sending events.
     NoEcho: True
@@ -110,7 +110,7 @@ Parameters:
   SalesforceOAuthClientSecret:
     Type: String
     Description: >-
-      Salesforce provided OAuth client secret that will be stored in
+      Salesforce-provided OAuth client secret to be stored in
       AWS Secrets Manager and used by Amazon EventBridge for authentication
       when sending events.
     NoEcho: True
@@ -138,7 +138,7 @@ Parameters:
     Description: >-
       Rate limit for Amazon EventBridge to the Salesforce platform event
       endpoint. The default soft limit is 25 for Production organizations &
-      Sandboxes, and the default soft limit is 5 for Developer Edition & Trial
+      Sandboxes, and 5 for Developer Edition & Trial
       organizations. Reference:
       'https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm'.
     MinValue: 1
@@ -146,16 +146,16 @@ Parameters:
   MaximumRetryAttempts:
     Type: Number
     Description: >-
-      The maximum number of retry attempts to make before the request fails.
+      Maximum number of retry attempts to make before the request fails.
       Retry attempts continue until either the maximum number of attempts is
-      made or until the duration of the MaximumEventAgeInSeconds is met.
+      made or the duration of the MaximumEventAgeInSeconds parameter is met.
     MinValue: 0
     MaxValue: 185
     Default: 4
   MaximumEventAgeInSeconds:
     Type: Number
     Description: >-
-      The maximum amount of time, in seconds, to continue to make retry
+      Maximum amount of time, in seconds, to continue to make retry
       attempts.
     MinValue: 60 # 1 minute
     MaxValue: 86400 # 1 day
@@ -169,14 +169,14 @@ Parameters:
     MaxLength: 80
     AllowedPattern: ^[a-zA-Z0-9-_]+$
     ConstraintDescription: >-
-      Can only include alphanumeric characters, hyphens, or underscores.
+      Can include only alphanumeric characters, hyphens, or underscores.
     Default: SalesforceDLQ
   DlqCmkAlias:
     Type: String
     Description: >-
-      The alias of a symmetric AWS KMS customer managed key (CMK) to use for
+      Alias of a symmetric AWS KMS customer-managed key (CMK) to use for
       server-side encryption of any Amazon Chime messages stored in the
-      Amazon SQS dead-letter queue. The default is to use the AWS managed CMK
+      Amazon SQS dead-letter queue. The default is to use the AWS-managed CMK
       for Amazon SQS (SSE-SQS). Alternatively, enter the alias of your custom
       CMK.
     MinLength: 7
@@ -189,17 +189,17 @@ Parameters:
   DlqKmsDataKeyReusePeriod:
     Type: Number
     Description: >-
-      The length of time in seconds for which Amazon SQS can reuse a data key
+      Length of time in seconds that Amazon SQS can reuse a data key
       to encrypt or decrypt messages before calling AWS KMS again. Note: A
       shorter time period provides better security, but results in more calls
-      to AWS KMS, which might incur charges after Free Tier.
+      to AWS KMS, which might incur charges after exceeding the free tier.
     MinValue: 60 # 1 minute
     MaxValue: 86400 # 1 day
     Default: 300 # 5 minutes
   DlqMessageRetentionPeriod:
     Type: Number
     Description: >-
-      The number of seconds that messages are retained in the dead-letter
+      Number of seconds that messages are retained in the dead-letter
       queue. The default is 4 days.
     MinValue: 60 # 1 minute
     MaxValue: 1209600 # 14 days
@@ -211,31 +211,30 @@ Parameters:
   DlqQueueDepthAlarmPeriod:
     Type: Number
     Description: >-
-      The period, in seconds, over which the statistic is applied. Valid values
+      Period, in seconds, over which the statistic is applied. Valid values
       are 10, 30, 60, and any multiple of 60.
     MinValue: 10
     Default: 300 # 5 minutes
   DlqQueueDepthAlarmEvaluationPeriods:
     Type: Number
     Description: >-
-      The number of periods over which the number messages in the dead-letter
+      Number of periods over which the number messages in the dead-letter
       queue is compared to the specified threshold.
     MinValue: 1
     Default: 1
   DlqQueueDepthAlarmThreshold:
     Type: Number
     Description: >-
-      The threshold number of messages in the dead-letter queue to trigger an
+      Threshold number of messages in the dead-letter queue to trigger an
       alarm. If set to 0, the Amazon CloudWatch alarm and Amazon SNS topic will
-      not be deployed- disabling the dead-letter queue monitoring and email
+      not be deployed, disabling dead-letter queue monitoring and email
       alerts.
     MinValue: 0
     Default: 10
   IamUserName:
     Type: String
     Description: >-
-      Username for the AWS IAM user account that will be used as the Salesforce
-      named credential service account.
+      User name for the AWS IAM user account used as the Salesforce Named Credential service account.
     MinLength: 1
     MaxLength: 64
     AllowedPattern: ^[\w+=,.@-]+$
@@ -245,8 +244,7 @@ Parameters:
   IamPassword:
     Type: String
     Description: >-
-      Password for the AWS IAM user account that will be used as the Salesforce
-      named credential service account.
+      Password for the AWS IAM user account used as the Salesforce Named Credential service account.
     NoEcho: True
     MinLength: 8
     MaxLength: 128
@@ -511,7 +509,7 @@ Resources:
     Properties:
       AWSServiceName: transcription.chime.amazonaws.com
       Description: >-
-        Amazon Chime service linked role with pre-defined permissions to allow
+        Amazon Chime service-linked role with pre-defined permissions to allow
         the service to call other AWS services on your behalf for performing
         transcription.
   SalesforceApiDestinationRole:
@@ -584,7 +582,7 @@ Resources:
   SalesforceEventRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: Rule to use API Destination with Input Transformer
+      Description: Rule to use API destination with input transformer.
       State: ENABLED
       EventPattern:
         source:
@@ -673,5 +671,5 @@ Resources:
       TreatMissingData: ignore
 Outputs:
   Postdeployment:
-    Description: See the deployment guide for post-deployment steps.
+    Description: See the deployment guide for postdeployment steps.
     Value: https://aws-quickstart.github.io/quickstart-salesforce-health-cloud-virtual-care/#_postdeployment_steps
