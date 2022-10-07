@@ -1,7 +1,6 @@
+# Salesforce Health Cloud: Virtual Care—Partner Solution
 
-## Salesforce Health Cloud: Virtual Care—Partner Solution
-
-For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://aws-quickstart.github.io/quickstart-salesforce-health-cloud-virtual-care/).
+For architectural details, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/3K8Wm?).
 
 To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
 
