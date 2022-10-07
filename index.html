@@ -913,7 +913,7 @@ Refer to the <a href="https://github.com/{partner-solution-github-org}/{partner-
 <p>This Partner Solution deploys Salesforce Health Cloud: Virtual Care on the AWS Cloud. If you are unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solutions General Information Guide</a>.</p>
 </div>
 <div class="paragraph">
-<p>This deployment integrates Virtual Care with Amazon Chime to offer video conferencing for patients using a healthcare platform connected to Salesforce Health Cloud.  Virtual Care sessions provide both video and audio support for patient-to-clinician interactions. Video calls can use Amazon Transcribe or Amazon Transcribe Medical to generate real-time audio transcriptions. You can also display text captions directly on the interface for accessibility.</p>
+<p>This deployment integrates Virtual Care with Amazon Chime to offer video conferencing for patients or members using a healthcare platform connected to Salesforce Health Cloud.  Virtual Care sessions provide both video and audio support for patient-to-clinician interactions. Video calls can use Amazon Transcribe or Amazon Transcribe Medical to generate real-time audio transcriptions. You can also display text captions directly on the interface for accessibility.</p>
 </div>
 </div>
 </div>
@@ -947,7 +947,10 @@ AWS Cloud.</p>
 <p>Amazon Chime SDK control plane for receiving requests from Salesforce Health Cloud when patients request appointments through their healthcare provider application.</p>
 </li>
 <li>
-<p>An EventBridge rule that filters aws.chime events and a predefined <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html" target="_blank" rel="noopener">input transformer rule</a> that modifies the event and creates a <a href="https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm" target="_blank" rel="noopener">Salesforce platform event</a>.</p>
+<p>A default event bus for receiving event notifications from the control plane and delivering them to Amazon EventBridge.</p>
+</li>
+<li>
+<p>An Amazon EventBridge rule that filters aws.chime events and a predefined <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html" target="_blank" rel="noopener">input transformer rule</a> that modifies the event and creates a <a href="https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm" target="_blank" rel="noopener">Salesforce platform event</a>.</p>
 </li>
 <li>
 <p>During an active session via a Salesforce-connected app, Amazon Chime SDK to communicate to the Amazon Chime media services endpoint to receive transcription requests.</p>
@@ -1169,7 +1172,7 @@ Unless you are customizing the Partner Solution templates for your own projects,
 </html>
 <!--
 repo commit:
-84956941bf52ae19c3ce10d4b160bd7250b32b9f
+c4a9319484b64a1e47397f4771da9a1b25095e26
 
 submodule config:
  167c65e733c3ed6e1d79e04f3c1ce7ce98bc052f docs/boilerplate (heads/main)
