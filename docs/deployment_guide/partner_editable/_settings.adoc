@@ -1,3 +1,5 @@
+:partner-solution-project-name: quickstart-salesforce-health-cloud-virtual-care
+:partner-solution-github-org: aws-quickstart
 :quickstart-project-name: quickstart-salesforce-health-cloud-virtual-care
 :quickstart-github-org: aws-quickstart
 :partner-company-short-name: Salesforce
