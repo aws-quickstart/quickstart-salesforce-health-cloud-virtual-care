@@ -1,6 +1,6 @@
 This Partner Solution deploys {partner-product-name} on the AWS Cloud. If you are unfamiliar with AWS Partner Solutions, refer to the https://fwd.aws/rA69w?[AWS Partner Solutions General Information Guide^].
 
-This deployment integrates {partner-product-short-name} with Amazon Chime to offer video conferencing for patients using a healthcare platform connected to Salesforce Health Cloud.  Virtual Care sessions provide both video and audio support for patient-to-clinician interactions. Video calls can use Amazon Transcribe or Amazon Transcribe Medical to generate real-time audio transcriptions. You can also display text captions directly on the interface for accessibility.
+This deployment integrates {partner-product-short-name} with Amazon Chime to offer video conferencing for patients or members using a healthcare platform connected to Salesforce Health Cloud.  Virtual Care sessions provide both video and audio support for patient-to-clinician interactions. Video calls can use Amazon Transcribe or Amazon Transcribe Medical to generate real-time audio transcriptions. You can also display text captions directly on the interface for accessibility.
 
 // For advanced information about the product that this Quick Start deploys, refer to the https://{quickstart-github-org}.github.io/{quickstart-project-name}/operational/index.html[Operational Guide^].
 
