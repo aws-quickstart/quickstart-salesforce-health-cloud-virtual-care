@@ -413,14 +413,14 @@ Resources:
             Version: 2012-10-17
             Statement:
               - Sid: ChannelUserActions
-              Effect: Allow
-              Action:
-                - chime:Connect
-                - chime:GetChannelMessage
-                - chime:SendChannelMessage
-              Resource:
-                - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                Effect: Allow
+                Action:
+                  - chime:Connect
+                  - chime:GetChannelMessage
+                  - chime:SendChannelMessage
+                Resource:
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
