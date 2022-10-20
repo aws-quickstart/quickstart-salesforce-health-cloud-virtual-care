@@ -412,98 +412,15 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              - Sid: AppInstanceActions
-                Effect: Allow
-                Action:
-                  - chime:DeleteAppInstance
-                  - chime:DescribeAppInstance
-                  - chime:GetAppInstanceRetentionSettings
-                  - chime:ListAppInstances
-                  - chime:PutAppInstanceRetentionSettings
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
-              - Sid: AppInstanceAdminActions
-                Effect: Allow
-                Action:
-                  - chime:CreateAppInstanceAdmin
-                  - chime:DeleteAppInstanceAdmin
-                  - chime:DescribeAppInstanceAdmin
-                  - chime:ListAppInstanceAdmins
-                Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
-              - Sid: AppInstanceUserActions
-                Effect: Allow
-                Action:
-                  - chime:Connect
-                  - chime:CreateChannel
-                  - chime:DeleteAppInstanceUser
-                  - chime:DescribeAppInstanceUser
-                  - chime:ListAppInstanceUserEndpoints
-                  - chime:ListAppInstanceUsers
-                  - chime:ListChannels
-                  - chime:ListChannelMembershipsForAppInstanceUser
-                  - chime:ListChannelsModeratedByAppInstanceUser
-                  - chime:UpdateAppInstanceUser
-                Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
               - Sid: ChannelUserActions
                 Effect: Allow
                 Action:
-                  - chime:CreateChannelMembership
-                  - chime:CreateChannelModerator
-                  - chime:DeleteChannel
-                  - chime:DeleteChannelMembership
-                  - chime:DescribeChannel
-                  - chime:DescribeChannelMembership
+                  - chime:Connect
                   - chime:GetChannelMessage
-                  - chime:ListChannelMemberships
-                  - chime:ListChannelMessages
-                  - chime:ListChannelModerators
                   - chime:SendChannelMessage
                 Resource:
                   - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
                   - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
-              - Sid: MeetingActions
-                Effect: Allow
-                Action:
-                  - chime:BatchCreateAttendee
-                  - chime:CreateAttendee
-                  - chime:DeleteAttendee
-                  - chime:DeleteMeeting
-                  - chime:GetAttendee
-                  - chime:GetMeeting
-                  - chime:ListAttendees
-                  - chime:ListAttendeeTags
-                  - chime:ListMeetingTags
-                  - chime:TagAttendee
-                  - chime:TagMeeting
-                  - chime:UntagAttendee
-                  - chime:UntagMeeting
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
-              - Sid: TagResourceActions
-                Effect: Allow
-                Action:
-                  - chime:ListTagsForResource
-                  - chime:TagResource
-                  - chime:UntagResource
-                Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
-              - Sid: GlobalActions
-                Effect: Allow
-                Action:
-                  - chime:CreateAppInstance
-                  - chime:CreateAppInstanceUser
-                  - chime:CreateMeeting
-                  - chime:CreateMeetingWithAttendees
-                  - chime:GetMessagingSessionEndpoint
-                  - chime:GetRetentionSettings
-                  - chime:ListMeetings
-                  - chime:StartMeetingTranscription
-                  - chime:StopMeetingTranscription
-                Resource: '*'
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
@@ -672,4 +589,4 @@ Resources:
 Outputs:
   Postdeployment:
     Description: See the deployment guide for postdeployment steps.
-    Value: https://aws-quickstart.github.io/quickstart-salesforce-health-cloud-virtual-care/#_postdeployment_steps
+    Value: https://fwd.aws/3K8Wm?/#_postdeployment_steps
