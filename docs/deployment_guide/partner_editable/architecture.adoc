@@ -11,7 +11,7 @@ image::../docs/deployment_guide/images/architecture-diagram-salesforce-health-cl
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* Amazon Chime SDK control plane for receiving requests from Salesforce Health Cloud when patients request appointments through their healthcare provider application.
+* Amazon Chime SDK control plane for receiving requests from Health Cloud when patients request appointments through their healthcare provider application.
 * A default event bus for receiving event notifications from the control plane and delivering them to Amazon EventBridge.
 * An Amazon EventBridge rule that filters aws.chime events and a predefined https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-transform-target-input.html[input transformer rule^] that modifies the event and creates a https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm[{partner-company-short-name} platform event^].
 * During an active session via a {partner-company-short-name}-connected app, Amazon Chime SDK to communicate to the Amazon Chime media services endpoint to receive transcription requests.
