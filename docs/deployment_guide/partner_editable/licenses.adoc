@@ -1,3 +1,5 @@
 // Include details about any licenses and how to sign up. Provide links as appropriate.
 
+This Partner Solution integrates various AWS services with a Salesforce Health Cloud. To receive support from AWS, you must enroll in either AWS Business Support or a higher support plan. For details and costs, refer to https://aws.amazon.com/premiumsupport/plans/[Compare AWS Support Plans].
+
 There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solutions General Information Guide^].
