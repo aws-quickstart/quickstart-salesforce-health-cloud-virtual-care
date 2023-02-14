@@ -26,8 +26,12 @@ Metadata:
           default: Service account
         Parameters:
           - IamUserName
-          - IamPassword
           - IamGroupName
+      - Label:
+          default: Meeting and Messaging regions configuration
+        Parameters:
+          - ControlRegion
+          - MessagingRegion
       - Label:
           default: Event processing retry configuration
         Parameters:
@@ -81,10 +85,12 @@ Metadata:
         default: Alarm threshold
       IamUserName:
         default: Username
-      IamPassword:
-        default: Password
       IamGroupName:
         default: Group name
+      ControlRegion:
+        default: AWS API Endpoint Region
+      MessagingRegion:
+        default: AWS Video Waiting Room and Messaging Region
 Parameters:
   SalesforceUsername:
     Type: String
@@ -241,13 +247,6 @@ Parameters:
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
     Default: salesforce
-  IamPassword:
-    Type: String
-    Description: >-
-      Password for the AWS IAM user account used as the Salesforce Named Credential service account.
-    NoEcho: True
-    MinLength: 8
-    MaxLength: 128
   IamGroupName:
     Type: String
     Description: >-
@@ -260,6 +259,26 @@ Parameters:
     ConstraintDescription: >-
       Use alphanumeric or any of the following symbols: _+=,.@-
     Default: salesforce
+  ControlRegion:
+    Type: String
+    Description: >-
+      Specifies the region through which API calls related to Video Calls are made.
+    MinLength: 1
+    MaxLength: 64
+    AllowedPattern: ^[\w+=,.@-]+$
+    ConstraintDescription: >-
+      Use alphanumeric or any of the following symbols: _+=,.@-
+    Default: us-east-1
+  MessagingRegion:
+    Type: String
+    Description: >-
+      Specifies the region in which the waiting room and messaging channel data is processed and stored.
+    MinLength: 1
+    MaxLength: 64
+    AllowedPattern: ^[\w+=,.@-]+$
+    ConstraintDescription: >-
+      Use alphanumeric or any of the following symbols: _+=,.@-
+    Default: us-east-1
 Conditions:
   CreateAlarm: !Not [!Equals [!Ref DlqQueueDepthAlarmThreshold, 0]]
 Resources:
@@ -292,7 +311,7 @@ Resources:
                   - chime:PutAppInstanceRetentionSettings
                   - chime:TagResource
                   - chime:UntagResource
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
+                Resource: !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*
               - Sid: AppInstanceAdminActions
                 Effect: Allow
                 Action:
@@ -301,8 +320,8 @@ Resources:
                   - chime:DescribeAppInstanceAdmin
                   - chime:ListAppInstanceAdmins
                 Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/user/*
               - Sid: AppInstanceUserActions
                 Effect: Allow
                 Action:
@@ -317,8 +336,8 @@ Resources:
                   - chime:ListChannelsModeratedByAppInstanceUser
                   - chime:UpdateAppInstanceUser
                 Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/user/*
               - Sid: ChannelUserActions
                 Effect: Allow
                 Action:
@@ -334,8 +353,8 @@ Resources:
                   - chime:ListChannelModerators
                   - chime:SendChannelMessage
                 Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/user/*
               - Sid: MeetingActions
                 Effect: Allow
                 Action:
@@ -352,7 +371,7 @@ Resources:
                   - chime:TagMeeting
                   - chime:UntagAttendee
                   - chime:UntagMeeting
-                Resource: !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
+                Resource: !Sub arn:${AWS::Partition}:chime:${ControlRegion}:${AWS::AccountId}:meeting/*
               - Sid: TagResourceActions
                 Effect: Allow
                 Action:
@@ -360,9 +379,9 @@ Resources:
                   - chime:TagResource
                   - chime:UntagResource
                 Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:meeting/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${ControlRegion}:${AWS::AccountId}:meeting/*
               - Sid: GlobalActions
                 Effect: Allow
                 Action:
@@ -381,9 +400,6 @@ Resources:
     Type: AWS::IAM::User
     Properties:
       UserName: !Ref IamUserName
-      LoginProfile:
-        Password: !Ref IamPassword
-        PasswordResetRequired: False
       Path: /salesforce/
       Groups:
         - !Ref IamGroup
@@ -419,8 +435,8 @@ Resources:
                   - chime:GetChannelMessage
                   - chime:SendChannelMessage
                 Resource:
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/channel/*
-                  - !Sub arn:${AWS::Partition}:chime:${AWS::Region}:${AWS::AccountId}:app-instance/*/user/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/channel/*
+                  - !Sub arn:${AWS::Partition}:chime:${MessagingRegion}:${AWS::AccountId}:app-instance/*/user/*
   ChimeTranscriptionSlr:
     Type: AWS::IAM::ServiceLinkedRole
     Properties:
