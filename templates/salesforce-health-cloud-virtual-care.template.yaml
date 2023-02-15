@@ -28,7 +28,7 @@ Metadata:
           - IamUserName
           - IamGroupName
       - Label:
-          default: Meeting and Messaging regions configuration
+          default: Meeting and Messaging Regions configuration
         Parameters:
           - ControlRegion
           - MessagingRegion
@@ -262,7 +262,7 @@ Parameters:
   ControlRegion:
     Type: String
     Description: >-
-      Specifies the region through which API calls related to Video Calls are made.
+      Specifies the AWS Region through which API calls related to Video Calls are made.
     MinLength: 1
     MaxLength: 64
     AllowedPattern: ^[\w+=,.@-]+$
@@ -272,7 +272,7 @@ Parameters:
   MessagingRegion:
     Type: String
     Description: >-
-      Specifies the region in which the waiting room and messaging channel data is processed and stored.
+      Specifies the AWS Region in which the waiting room and messaging channel data is processed and stored.
     MinLength: 1
     MaxLength: 64
     AllowedPattern: ^[\w+=,.@-]+$
