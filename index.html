@@ -858,6 +858,7 @@ p.footer-text a{color:#d7d8d8}
 <li><a href="#_costs_and_licenses">Costs and licenses</a></li>
 <li><a href="#_architecture">Architecture</a></li>
 <li><a href="#_deployment_options">Deployment options</a></li>
+<li><a href="#_upgrade_an_existing_deployment_of_virtual_care">Upgrade an existing deployment of Virtual Care</a></li>
 <li><a href="#_predeployment_steps">Predeployment steps</a></li>
 <li><a href="#_deployment_steps">Deployment steps</a></li>
 <li><a href="#_postdeployment_steps">Postdeployment steps</a></li>
@@ -995,6 +996,64 @@ AWS Cloud.</p>
 </div>
 <div class="paragraph">
 <p><a href="https://fwd.aws/jq4y3?" target="_blank" rel="noopener">Deploy Virtual Care into a new AWS account</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_upgrade_an_existing_deployment_of_virtual_care">Upgrade an existing deployment of Virtual Care</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you&#8217;ve already deployed Virtual Care and just need to upgrade your existing deployment, perform the following steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Do the following steps to download the latest template file from GitHub:</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Navigate to the <a href="https://fwd.aws/MQ4QG?" target="_blank" rel="noopener">Partner Solution landing page</a>.</p>
+</li>
+<li>
+<p>Choose <strong>View the source code for this Partner Solution</strong> to open the GitHub repository.</p>
+</li>
+<li>
+<p>Open the <strong>template</strong> folder to access the latest CloudFormation template.</p>
+</li>
+<li>
+<p>Download the template.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>In the AWS Management Console, choose <strong>Services &gt; CloudFormation</strong>.</p>
+</li>
+<li>
+<p>Choose the existing Virtual Care stack.</p>
+</li>
+<li>
+<p>Choose <strong>Update</strong> to open the <strong>Update stack</strong> page.</p>
+</li>
+<li>
+<p>Choose <strong>Replace current template</strong>, and upload the template file. Choose <strong>Next</strong>.</p>
+</li>
+<li>
+<p>On the <strong>Specify stack details</strong> page, review the stack settings and update the control Region (for example, us-east-1) and messaging Region (for example, us-east-1). Choose <strong>Next</strong>.</p>
+</li>
+<li>
+<p>On the <strong>Configure stack options</strong> page, review the changes and choose <strong>Next</strong>.</p>
+</li>
+<li>
+<p>On the <strong>Review</strong> page, review and confirm template settings. Under <strong>Capabilities</strong>, select all of the check boxes to acknowledge that the template creates AWS Identity and Access Management (IAM) resources that might require the ability to automatically expand macros.</p>
+</li>
+<li>
+<p>Choose <strong>Submit</strong>. The stack takes about 5 minutes to update.</p>
+</li>
+<li>
+<p>Monitor the stack&#8217;s status, and when the status is <strong>UPDATE_COMPLETE</strong>, the Salesforce Health Cloud: Virtual Care deployment is ready.</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -1175,7 +1234,7 @@ Unless you are customizing the Partner Solution templates for your own projects,
 </html>
 <!--
 repo commit:
-80d9d05e5bc0ea3a4e6bfe45140b75a542bc263a
+30a131d118819ec309980285f04c17da64060ffa
 
 submodule config:
  48efbd14b4ef976f2afcee3f080dba016ef15950 docs/boilerplate (48efbd1)
